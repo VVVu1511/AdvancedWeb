@@ -50,7 +50,7 @@ The system will reduce and measure these errors in four ways:
 |---|---|---|---|
 | PA#1. Proposal and plan | Linh: §1–2, README. Vu: §3, §5. Thai: §4, §6, self-assessment | Nguyen Phan Hung Linh | 2026-10-23 |
 | PA#2. Harness and quality gates | Linh: scaffold, data model, migrations. Vu: conventions, lint, types, merge-blocking CI. Thai: tag guide, user flow, Vitest and Playwright | Vu Van Vu | 2026-11-27 |
-| PA#3. LLM prototype | Linh: TMDB import, auth, catalog pages. Vu: intent extraction, prompt tests. Thai: retrieval, ranking, ID validation. Each reviews tags for about 67 films | Pham Ngoc Thai | 2026-12-11 |
+| PA#3. LLM prototype | Linh: TMDB import, auth, title search, detail pages. Vu: intent extraction, prompt tests. Thai: retrieval, ranking, ID validation. Each reviews tags for about 67 films | Pham Ngoc Thai | 2026-12-11 |
 | PA#4. Eval and guardrails | Linh: eval runner, report. Vu: budget cap, cache, fallback. Thai: red-team fixes. Each writes 10 of the 30 prompts | Nguyen Phan Hung Linh | 2026-12-18 |
 | PA#5. Finalisation and operations | Linh: watchlist, feedback. Vu: preference reranking, end-to-end tests. Thai: deployment, logs, metrics, post-mortem | Vu Van Vu | 2026-12-25 |
 | PA#6. Individual oral examination | Each member explains the other two members' code in a mock oral; demo rehearsal | Pham Ngoc Thai | 2026-12-31 (mock) |
