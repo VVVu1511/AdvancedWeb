@@ -20,6 +20,22 @@ Tool: Claude Code (Claude Opus 5.5).
 
 **Rejected:** a full rewrite tried first in the same session. The team preferred the original draft's format and wording, so it was reverted to commit `db1c711` and only the fixes above were applied.
 
+**Verification:** we ran three rounds of blind grading, each with 5 fresh Claude Code agents. Each agent was given only the rubric, the syllabus and proposal.md. Totals:
+- Round 1: 91, 91, 90, 91, 89
+- Round 2: 90, 90, 89, 92, 91
+- Round 3: 98, 93, 91, 94, 92
+
+Between rounds we fixed only the deductions the graders repeated. These were:
+- the compound problem sentence
+- the Precision@5 relevance rule
+- the exclusion-severity and gate wording
+- owners for the fallback and explanations
+- risk 2 being two risks in one
+- the uncosted extraction call
+- the RLS wording
+- the Supabase idle pause
+- length
+
 **By hand / to confirm:**
 - the milestone dates once Classroom publishes them
 - Linh's and Vu's student IDs for the zip name

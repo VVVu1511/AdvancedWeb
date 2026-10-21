@@ -1,32 +1,29 @@
 # PA#1: CineMatch proposal and planning
 
-**Course:** CSC13114  
-**Project:** CineMatch, find a movie that matches your mood  
-**Team:** Nguyen Phan Hung Linh, Vu Van Vu, Pham Ngoc Thai  
+**Course:** CSC13114 · **Project:** CineMatch, find a movie that matches your mood  
+**Team:** Nguyen Phan Hung Linh (Linh), Vu Van Vu (Vu), Pham Ngoc Thai (Thai)  
 **Repository:** https://github.com/VVVu1511/AdvancedWeb/tree/PA01
 
 ## 1. Problem and users
 
-Minh is a university student who opens a streaming service after 10 p.m. but spends 20 to 30 minutes comparing categories, trailers, ratings, and recommendation lists. **Problem: Minh can describe the experience he wants, but ordinary title and genre filters cannot turn that description into a trustworthy shortlist.**
+Minh is a university student who opens a streaming service after 10 p.m. but spends 20 to 30 minutes comparing categories, trailers, ratings, and recommendation lists. **Problem: Minh cannot turn a mood he can describe into a shortlist of real films that respects what he wants to avoid.**
 
-The primary users are students and young adults who know the tone, theme, setting, or ending they want but not a title. They currently ask friends, browse streaming categories, search the web, or prompt a general chatbot. These options require manual checking and may return invented titles or unsupported claims.
+Today Minh asks friends, browses streaming categories, searches the web, or prompts a general chatbot, which may return invented titles or unsupported claims. Users like Minh are students and young adults who know the tone, theme, setting, or ending they want but not a title.
 
-CineMatch will accept a request such as, "I want a highly rated school romance about loneliness, with a bittersweet ending, but nothing too depressing." It will return up to five real films from a controlled catalog. Each result will explain the match and show verified facts. Users can save films and rate the match, which will affect later rankings.
+CineMatch accepts a request like "a highly rated school romance about loneliness, bittersweet but nothing too depressing" and returns up to five real films from a controlled catalog, each with an explanation and verified facts. Users can save films and rate the match, which only reorders later verified candidates.
 
 ## 2. Core LLM feature and cost of errors
 
-The core feature is natural-language intent matching. The LLM will identify the user's hard constraints and preferences, such as genre, setting, theme, emotional intensity, ending type, rating, runtime, and exclusions. The server will retrieve eligible films using facts from The Movie Database, or TMDB, and team-reviewed mood and ending tags. The LLM will rank only those candidates and explain each choice from supplied metadata. It cannot create a title, movie ID, rating, or plot fact.
+The core feature is natural-language intent matching. The LLM extracts hard constraints and preferences such as genre, setting, theme, emotional intensity, ending type, rating, runtime, and exclusions. The server will retrieve eligible films using The Movie Database (TMDB) facts and team-reviewed tags. The LLM will rank only those candidates and explain each choice from supplied metadata. It cannot create a title, movie ID, rating, or plot fact. An LLM suits this task because people describe mood in combinations that fixed filters handle poorly. The app will show its interpretation as editable search preferences before results appear.
 
-An LLM suits this task because people describe mood in combinations that fixed filters handle poorly. The app will show its interpretation as editable search preferences before another search.
-
-A nonexistent title or false rating can waste 5 to 15 minutes of checking. A wrong tone, ending, or content note can waste a 90 to 150 minute viewing session and expose the user to content they excluded, such as a suicide scene Minh asked to avoid. A watchlist error can be removed, but lost time and an unwanted viewing experience cannot be undone.
+A nonexistent title or false rating wastes 5 to 15 minutes of checking. A wrong tone, ending, or content note can waste a 90 to 150 minute viewing session and expose the user to content they excluded, such as a suicide scene Minh asked to avoid. A watchlist error can be removed, but lost time and an unwanted viewing experience cannot be undone.
 
 The system will reduce and measure these errors in four ways:
 
 - The API will reject any recommendation whose TMDB ID is absent from the retrieved candidate set, and any explanation that cites a tag the film does not have.
 - Factual fields will come from TMDB. The team will review subjective tags before a film enters the catalog.
-- The interface will show matched constraints and flag uncertain interpretations.
-- A 30-prompt labelled test set will measure valid IDs, hard-constraint accuracy, and Precision@5. Release targets are 100%, 90%, and 70% respectively, with zero results that break a user's exclusion. Linh runs it on every prompt or model change from PA#4. User feedback will record real-world mood fit.
+- Human gate: the costliest error is a broken exclusion, so if an exclusion maps to no reviewed tag, Minh must confirm or edit it before results appear. Tone needs no gate, because the shown interpretation and explanations let him correct it before watching.
+- A 30-prompt labelled test set will measure valid IDs, hard-constraint accuracy, and Precision@5. A result is relevant if two of three members labelled it so before the run. Release targets are 100%, 90%, and 70% respectively, with zero results that break an exclusion; 10 of the 30 prompts contain one. Linh runs it on every prompt or model change from PA#4. A "broke my exclusion" report hides the film until re-review.
 
 ## 3. Scope
 
@@ -36,38 +33,37 @@ The system will reduce and measure these errors in four ways:
 - Natural-language mood search, candidate retrieval, ranking, and evidence-based explanations.
 - Verified TMDB data plus reviewed mood, theme, intensity, ending, and content tags.
 - A watchlist, match feedback, simple preference reranking, automated tests, evaluation, and deployment.
+- Guardrails and operations: budget cap, cache, tag-only fallback, exclusion gate and report, logs, metrics, one post-mortem.
 
 ### Out of scope this semester
 
-- Film streaming, payments, and guaranteed real-time streaming availability.
-- TV series, social or group features, reviews, and native mobile apps.
-- Full TMDB coverage, model fine-tuning, and large-scale collaborative filtering.
-- Unverified plot generation. CineMatch will not claim facts that are missing from its stored metadata.
+- Film streaming, payments, real-time availability, TV series, social features, written user reviews, and native mobile apps.
+- Full TMDB coverage, fine-tuning, collaborative filtering, and generated plot facts missing from stored metadata.
 
 ## 4. Plan and ownership
 
 | Checkpoint | Deliverable | Owner | Due date |
 |---|---|---|---|
-| PA#1. Proposal and plan | Linh: §1–2, README. Vu: §3, §5. Thai: §4, §6, self-assessment | Nguyen Phan Hung Linh | 2026-10-23 |
-| PA#2. Harness and quality gates | Linh: scaffold, data model, migrations. Vu: conventions, lint, types, merge-blocking CI. Thai: tag guide, user flow, Vitest and Playwright | Vu Van Vu | 2026-11-27 |
-| PA#3. LLM prototype | Linh: TMDB import, auth, title search, detail pages. Vu: intent extraction, prompt tests. Thai: retrieval, ranking, ID validation. Each reviews tags for about 67 films | Pham Ngoc Thai | 2026-12-11 |
-| PA#4. Eval and guardrails | Linh: eval runner, report. Vu: budget cap, cache, fallback. Thai: red-team fixes. Each writes 10 of the 30 prompts | Nguyen Phan Hung Linh | 2026-12-18 |
-| PA#5. Finalisation and operations | Linh: watchlist, feedback. Vu: preference reranking, end-to-end tests. Thai: deployment, logs, metrics, post-mortem | Vu Van Vu | 2026-12-25 |
-| PA#6. Individual oral examination | Each member explains the other two members' code in a mock oral; demo rehearsal | Pham Ngoc Thai | 2026-12-31 (mock) |
+| PA#1 Proposal | Linh: §1–2, README, 10-prompt pilot. Vu: §3, §5, tag guide. Thai: §4, §6, self-assessment. Vu and Thai: 20-film agreement test | Linh | 2026-10-23 |
+| PA#2 Harness, quality gates | Linh: scaffold, data model, migrations, TMDB import. Vu: conventions, lint, types, merge-blocking CI. Thai: Vitest, Playwright, Vercel previews. Each reviews tags for about 67 films | Vu | 2026-11-27 |
+| PA#3 LLM prototype | Linh: auth, title search, detail pages. Vu: intent extraction, interpretation UI, prompt tests. Thai: retrieval, ranking, explanations, ID and tag validation, tag-only fallback | Thai | 2026-12-11 |
+| PA#4 Eval, guardrails, human gate | Linh: eval runner, report. Vu: budget cap, cache, exclusion gate, report-and-hide. Thai: red-team fixes. Each writes 10 of the 30 prompts | Linh | 2026-12-18 |
+| PA#5 Final, operations | Linh: watchlist, feedback. Vu: preference reranking, end-to-end tests. Thai: deployment, logs, metrics, post-mortem | Vu | 2026-12-25 |
+| PA#6 Oral exam | Each explains the other two members' code in a mock oral | Thai | Exam week; mock 2026-12-31 |
 
-Checkpoints are the syllabus's PA#1–PA#6. Dates after PA#1 assume one syllabus topic per week from session 2 (2026-10-15) and will be re-synced with Classroom. Each member owns two checkpoints and does a third of every checkpoint. Owners integrate and submit, and another member reviews each pull request.
+Checkpoints are the syllabus's PA#1–PA#6, dated by its topic order (PA#2–PA#5 at topics 7, 9, 10, 11) and re-synced with Classroom. Each member owns two and does a third of each.
 
 ## 5. Major risks and mitigation
 
-1. **The catalog cannot support subjective requests.** TMDB does not reliably label loneliness, intensity, or bittersweet endings. Without those fields, the core search fails. This week, Vu and Thai will define a tag guide, independently label 20 films, resolve disagreements, and test 10 queries. If agreement is below 80%, they will simplify the taxonomy before catalog entry continues.
+1. **The catalog cannot support subjective requests.** TMDB lacks labels for loneliness, intensity, or bittersweet endings, so the core search would fail. This week, Vu will write the tag guide, and Vu and Thai will independently label 20 films and test 10 queries. If per-tag agreement is below 80%, they simplify the taxonomy before catalog entry.
 
-2. **The LLM invents evidence or fails during the demo.** Either failure removes the core value. This week, Linh will run 10 test prompts, five with exclusions, through `gpt-5-mini` against a fixed list of 30 candidate films. The run will count invented IDs and missed exclusions. Linh will also set a $5 hard budget limit on the OpenAI project. If any invented ID or missed exclusion appears, the candidate-ID allowlist and the deterministic fallback move to the start of PA#3. The app will identify degraded mode.
+2. **The LLM invents evidence or misses exclusions.** This week, Linh will run 10 prompts, five with exclusions, through `gpt-5-mini` on 30 fixed candidates, counting invented IDs and missed exclusions, and set a $5 hard budget limit. If any appears, the model may only return candidate indices and tag IDs, with template explanations, until the test set passes.
 
 ## 6. Technology choices
 
-- **Next.js with TypeScript:** One typed codebase will handle the responsive UI, server routes, and validation.
-- **Supabase Postgres and Auth:** Relational tables fit movies, tags, watchlists, and feedback. Its $0 plan's 500 MB database is enough for this catalog.
-- **TMDB API:** It supplies stable IDs and factual movie data, free for attributed non-commercial use. CineMatch will show the required notice and logo.
-- **OpenAI `gpt-5-mini`:** The model can interpret detailed mood requests at low cost. Input costs $0.25 per million tokens and output costs $2.00 per million tokens (OpenAI pricing page, checked 2026-10-22). At 5,000 input and 250 output tokens, one search costs about $0.00175 and 1,000 cost about $1.75. The cap is $5 per month.
-- **Zod, Vitest, and Playwright:** These tools will validate model output, test ranking logic, and cover the search, save, and feedback flows.
-- **Vercel:** Its $0 plan supplies direct Next.js deployment and pull-request previews for the class demo.
+- **Next.js with TypeScript:** Server routes keep the OpenAI key and the candidate-ID check on the server, in one typed codebase with the responsive UI.
+- **Supabase Postgres and Auth:** Relational tables fit movies, tags, watchlists, and feedback, and Postgres row-level security on Auth user IDs keeps each watchlist private. The $0 plan's 500 MB fits the catalog; a CI ping stops idle pausing.
+- **TMDB API:** Stable IDs and factual data, free for non-commercial use with the attribution we show.
+- **OpenAI `gpt-5-mini`:** Structured Outputs return the strict JSON our allowlist checks; only the query and candidate metadata are sent, never account data. Input costs $0.25 and output $2.00 per million tokens (checked 2026-10-22). Extraction (about 600 in, 150 out) plus ranking (5,000 in for 30 candidates, 250 out) costs about $0.0022 per search and $2.20 per 1,000. The cap is $5 per month.
+- **Zod, Vitest, and Playwright:** Validate model output, test ranking, and cover search, save, and feedback.
+- **Vercel:** Its $0 plan deploys Next.js, and previews let a second member try each PR's search before merge.
