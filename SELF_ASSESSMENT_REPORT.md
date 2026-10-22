@@ -1,7 +1,7 @@
 # SELF_ASSESSMENT_REPORT — PA#1 Proposal and planning (CineMatch)
 
-**Team:** Nguyen Phan Hung Linh · Vu Van Vu (23127543) · Pham Ngoc Thai (23127472)
-**Zip:** `<ID1>-<ID2>-<ID3>_92.zip`, with IDs in ascending order
+**Team:** Nguyen Phan Hung Linh (23127081) · Pham Ngoc Thai (23127472) · Vu Van Vu (23127543) 
+**Zip:** `23127081-23127472-23127543_92.zip`, with IDs in ascending order
 **Rubric:** "PA#1 — Proposal and planning · rubric", six criteria, 100 points. The scored document is `proposal.md`.
 
 | # | Criterion | Max | Claimed | Evidence |
