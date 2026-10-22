@@ -55,15 +55,15 @@ Checkpoints are the syllabus's PA#1–PA#6, dated by its topic order (PA#2–PA#
 
 ## 5. Major risks and mitigation
 
-1. **The catalog cannot support subjective requests.** TMDB lacks labels for loneliness, intensity, or bittersweet endings, so the core search would fail. This week, Vu will write the tag guide, and Vu and Thai will independently label 20 films and test 10 queries. If per-tag agreement is below 80%, they simplify the taxonomy before catalog entry.
+1. **The catalog cannot support subjective requests.** TMDB does not consistently provide tags for subjective concepts such as loneliness, emotional intensity, or bittersweet endings, which could reduce search relevance. This week, Vu will define the tagging guidelines, and Vu and Thai will independently label 20 films and evaluate 10 test queries. If inter-annotator agreement for tags falls below 80%, the team will simplify the taxonomy before labeling the full catalog.
 
-2. **The LLM invents evidence or misses exclusions.** This week, Linh will run 10 prompts, five with exclusions, through `gpt-5-mini` on 30 fixed candidates, counting invented IDs and missed exclusions, and set a $5 hard budget limit. If any appears, the model may only return candidate indices and tag IDs, with template explanations, until the test set passes.
+2. **The LLM invents evidence or misses exclusions.** This week, Linh will test 10 prompts, including five with explicit exclusions, using gpt-5-mini and 30 fixed candidate films. The team will measure invented movie IDs and missed exclusions and enforce a $5 monthly API spending limit. If either error occurs, the model will be restricted to returning candidate indices and approved tag IDs, with explanations generated from templates, until the evaluation set passes.
 
 ## 6. Technology choices
 
 - **Next.js with TypeScript:** Server routes keep the OpenAI key and the candidate-ID check on the server, in one typed codebase with the responsive UI.
-- **Supabase Postgres and Auth:** Relational tables fit movies, tags, watchlists, and feedback, and Postgres row-level security on Auth user IDs keeps each watchlist private. The $0 plan's 500 MB fits the catalog; a CI ping stops idle pausing.
-- **TMDB API:** Stable IDs and factual data, free for non-commercial use with the attribution we show.
-- **OpenAI `gpt-5-mini`:** Structured Outputs return the strict JSON our allowlist checks; only the query and candidate metadata are sent, never account data. Input costs $0.25 and output $2.00 per million tokens (checked 2026-10-22). Extraction (about 600 in, 150 out) plus ranking (5,000 in for 30 candidates, 250 out) costs about $0.0022 per search and $2.20 per 1,000. The cap is $5 per month.
-- **Zod, Vitest, and Playwright:** Validate model output, test ranking, and cover search, save, and feedback.
-- **Vercel:** Its $0 plan deploys Next.js, and previews let a second member try each PR's search before merge.
+- **Supabase Postgres and Auth:** Relational tables store movies, reviewed tags, watchlists, and feedback. Row-level security (RLS) restricts each user's watchlist to their authenticated user ID. The free plan is suitable for a small prototype; the team will monitor storage and usage limits and document recovery steps if the project becomes inactive.
+- **TMDB API:** Provides stable movie IDs and factual metadata, including titles, genres, ratings, and runtime. The team will follow TMDB's attribution requirements and its non-commercial-use terms.
+- **Google Gemini API (gemini-2.5-flash):** The free tier supports natural-language preference extraction and candidate ranking without per-token API charges within its usage limits. Structured Outputs and server-side validation constrain responses to the expected schema. The server checks candidate IDs, verifies referenced tags, and enforces exclusions independently of the model. Only the user's search query and necessary candidate metadata are sent; account data is excluded. The team will monitor quota usage, handle rate-limit errors, and avoid promising unlimited free requests.
+- **Zod, Vitest, and Playwright:** Zod validates model responses, Vitest tests preference extraction and ranking logic, and Playwright covers end-to-end search, watchlist saving, and feedback flows.  
+- **Vercel:** The free plan supports deploying the Next.js prototype. Preview deployments allow another team member to test each pull request's search flow before merging it into the main branch.
