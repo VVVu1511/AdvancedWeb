@@ -27,7 +27,7 @@ export function createApp({ plans = [] } = {}) {
   const records = new Map(plans.map((plan) => [plan.id, { ...plan, saved: null, replays: new Map() }]));
   return { async handle({ method, path, headers = {}, body }) {
     const route = /^\/plans\/([^/]+)\/save$/.exec(path);
-    if (method !== 'POST' || !route) return response(404, problem(404, 'not-found', 'Not found', 'No matching endpoint exists.'));
+    if (method !== 'POST' || !route) return response(404, problem(404, 'plan-not-found', 'Not found', 'No matching endpoint exists.'));
     const userId = readUserId(headers.authorization);
     if (!userId) return response(401, problem(401, 'authentication-required', 'Authentication required', 'Use a bearer token for a user.'));
     const plan = records.get(route[1]);

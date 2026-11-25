@@ -4,6 +4,8 @@ PA#2 establishes the quality gate and implements the contract for saving a valid
 
 ## Setup and checks
 
+Run these commands from `PA02/`. No package installation is needed.
+
 Copy `.env.example` to `.env` if you need local configuration. Do not put real values in the example file. Run each required check with one command:
 
 <!--
@@ -64,3 +66,9 @@ See [the save-plan contract](docs/contract/save-plan.md). Start the local servic
 `npm start`.
 <!-- Was `npm.cmd start`; changed to `npm start` for the same cross-platform reason as the checks above. -->
 
+
+## Check and configuration limits
+
+The custom lint check rejects trailing whitespace and forbidden `var`/`eval` patterns. Format check enforces LF and a final newline. `typecheck` checks runtime API exports and a validator result; it is not static type analysis. These limited checks are retained and disclosed in the self-assessment.
+
+`PORT` defaults to 3000 when unset. This service does not load `.env` automatically. `MODEL_API_KEY` and `MODEL_MONTHLY_SPENDING_CAP_USD` are placeholders for a later integration and are not read by the current service. No provider, API key or provider spending cap is configured for PA#2. Model cost per plan is USD 0 because it makes no model calls. The USD 5/month cap above is a future policy, not an active provider setting.
