@@ -32,7 +32,7 @@ export function createApp({ plans = [] } = {}) {
     if (!userId) return response(401, problem(401, 'authentication-required', 'Authentication required', 'Use a bearer token for a user.'));
     const plan = records.get(route[1]);
     if (!plan) return response(404, problem(404, 'plan-not-found', 'Plan not found', 'The requested plan does not exist.'));
-    if (plan.ownerId !== userId) return response(404, problem(404, 'plan-not-found', 'Plan not found', 'The requested plan does not exist.'));
+    if (plan.ownerId !== userId) return response(403, problem(403, 'plan-not-owned', 'Plan is not owned by caller', 'Only the plan owner may save this plan.'));
     const idempotencyKey = headers['idempotency-key'];
     if (typeof idempotencyKey !== 'string' || !/^[A-Za-z0-9-]{8,128}$/.test(idempotencyKey)) return response(400, problem(400, 'invalid-idempotency-key', 'Invalid idempotency key', 'Idempotency-Key must be 8-128 letters, digits, or hyphens.'));
     const fingerprint = JSON.stringify(body);
