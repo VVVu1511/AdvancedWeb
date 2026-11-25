@@ -27,7 +27,7 @@ Design decisions:
 
 - The four checks above are required, bound to the GitHub Actions app (`app_id` 15368), so a commit status posted through the API cannot satisfy them.
 - `strict: true` requires the PR branch to be up to date with `main` before merging.
-- A pull request is required for every change; `enforce_admins: true` applies the rule to administrators too, so nobody can push directly to `main`.
+- A pull request with one approving review from another member is required for every change; `enforce_admins: true` (*Do not allow bypassing the above settings*) applies the rule to administrators too, so nobody can push directly to `main`.
 - Force-pushes and deletion of `main` are blocked.
 
 Apply it with a repository administrator's GitHub CLI login (run from the repository root):
@@ -44,12 +44,20 @@ gh api repos/VVVu1511/AdvancedWeb/branches/main/protection
 
 Branch protection on a private repository needs a paid plan; PA#2 requires the repository to be public, so make it public first.
 
+## Applied settings
+
+Vũ (repository owner) enabled the rule on `main` in *Settings → Branches* with these settings; the JSON above mirrors them. Screenshots: [part 1](evidence/branch-protection-1.webp), [part 2](evidence/branch-protection-2.png). Anyone with read access can confirm the required checks:
+
+```powershell
+gh api repos/VVVu1511/AdvancedWeb/branches/main --jq '{protected, required_checks: .protection.required_status_checks}'
+```
+
 ## Evidence procedure
 
 Do these steps in order. Rubric criteria 4 and 6 do not accept rebased or rebuilt history, so merge without squashing or rebasing the evidence commits and never force-push them.
 
 1. **Gate PR.** Push the branch that adds the workflow (`PA02`) and open a PR into `main`. Wait for the four checks to pass. This run also registers the check names with GitHub.
-2. **Protect `main`.** Apply the protection above, before anything is merged. Take a screenshot of *Settings → Branches → main* that shows the four required checks, and save it as `PA02/docs/ci/evidence/branch-protection.png`. Then merge the gate PR through the GitHub UI.
+2. **Protect `main`.** Apply the protection above, before anything is merged. Take a screenshot of *Settings → Branches → main* that shows the four required checks, and save it in `PA02/docs/ci/evidence/`. Then merge the gate PR through the GitHub UI after another member approves it.
 3. **Deliberate contract break.** Create `pa2/deliberate-contract-break` from the updated `main` and change only the code, not the test or contract. In `PA02/src/app.mjs`, make the ownership rule return the wrong documented status:
 
    ```diff

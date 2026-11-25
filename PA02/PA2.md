@@ -6,7 +6,7 @@ Every `TODO` below is a link that only exists after the steps in [`docs/ci/quali
 |---|---|
 | Repository | https://github.com/VVVu1511/AdvancedWeb |
 | CI workflow | [`.github/workflows/pa02-quality-gate.yml`](../.github/workflows/pa02-quality-gate.yml) |
-| Protected-branch settings for `main` | TODO(Thái): `docs/ci/evidence/branch-protection.png` and https://github.com/VVVu1511/AdvancedWeb/settings/branches |
+| Protected-branch settings for `main` | Screenshots [part 1](docs/ci/evidence/branch-protection-1.webp) and [part 2](docs/ci/evidence/branch-protection-2.png); settings in [`docs/ci/branch-protection-main.json`](docs/ci/branch-protection-main.json) |
 | Blocked PR: a red check stopped the merge | TODO(Thái): PR URL, failing run URL, `docs/ci/evidence/blocked-pr.png`, `docs/ci/evidence/red-check.png` |
 | Deliberate contract break | TODO(Thái): commit URL of `test(PA02): deliberately break the save-plan ownership contract` |
 | PR that turned green | TODO(Thái): PR URL, restore commit URL, green run URL, `docs/ci/evidence/green-pr.png` |
