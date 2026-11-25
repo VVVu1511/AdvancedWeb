@@ -1,0 +1,71 @@
+# PA#2 quality gate for the AI Travel Planner service in PA02/.
+#
+# Each job runs one of the exact commands documented in PA02/README.md and
+# PA02/AGENTS.md (`npm run ...`), verbatim, from PA02/. Each job name is a
+# separate required status check on `main`. If a command changes, change it in
+# all three places together (rubric criterion 3: same commands locally and in CI).
+#
+# The commands used to be `npm.cmd ...`, which exists only on Windows. Now that
+# the documented commands are cross-platform, the gate runs on Linux. LF line
+# endings for *.mjs are guaranteed by PA02/.gitattributes, so the format check
+# sees the committed bytes on every runner.
+#
+# No `paths` filter is used on purpose: a required check that never runs would
+# leave a pull request blocked, and skipping it would let an unchecked change in.
+name: PA02 quality gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    tags: [pa2]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pa02-quality-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      # Report every failing check, not only the first one.
+      fail-fast: false
+      matrix:
+        include:
+          - name: PA02 lint
+            command: npm run lint
+          - name: PA02 format check
+            command: npm run format:check
+          - name: PA02 typecheck
+            command: npm run typecheck
+          - name: PA02 test
+            command: npm test
+    defaults:
+      run:
+        shell: bash
+        working-directory: PA02
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Show toolchain
+        run: |
+          node --version
+          npm --version
+
+      # The service has no dependencies and no lockfile, so there is nothing to
+      # install. The command below is copied verbatim from PA02/README.md.
+      - name: Run `${{ matrix.command }}`
+        run: ${{ matrix.command }}
