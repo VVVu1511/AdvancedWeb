@@ -8,7 +8,7 @@
     "format:check": "node scripts/format-check.mjs",
     "typecheck": "node scripts/typecheck.mjs",
     "test": "node --test",
-    "check": "npm.cmd run lint && npm.cmd run format:check && npm.cmd run typecheck && npm.cmd test",
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm test",
     "start": "node src/server.mjs"
   },
   "engines": {

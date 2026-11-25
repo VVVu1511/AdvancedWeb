@@ -7,17 +7,34 @@
 
 ## Commands
 
-- `npm.cmd run lint`
-- `npm.cmd run format:check`
-- `npm.cmd run typecheck`
-- `npm.cmd test`
-- `npm.cmd run check` runs all four checks.
+<!--
+  These commands were `npm.cmd ...` before. `npm.cmd` exists only on Windows:
+  on Linux/macOS each command failed with "command not found", and CI had to
+  run on a Windows runner to use them verbatim. `npm run ...` works on every
+  operating system. Keep this list identical to PA02/README.md and to
+  .github/workflows/pa02-quality-gate.yml (rubric criterion 3: the same
+  commands locally and in CI).
+-->
+- `npm run lint`
+- `npm run format:check`
+- `npm run typecheck`
+- `npm test`
+- `npm run check` runs all four checks.
 
 ## Conventions
 
 - Return JSON, including RFC 9457 problem details for every API error.
 - Authenticate the request before exposing plan data, and enforce that the plan owner is the caller.
 - Keep validation deterministic and side-effect-free; test a contract through HTTP, not only helpers.
+<!--
+  The two lines below come from real failures in PA#2:
+  1. Commands written as `npm.cmd` worked only on Windows (see Commands above).
+  2. Git for Windows (core.autocrlf=true) checked .mjs files out with CRLF, so
+     `npm run format:check` failed on a fresh clone although git stored LF.
+     PA02/.gitattributes now forces LF for *.mjs.
+-->
+- Write commands as `npm run …`, never `npm.cmd`; they must work on Windows, Linux, macOS and CI.
+- Keep `.mjs` files LF (enforced by `.gitattributes`); do not convert them to CRLF.
 
 ## Never
 
