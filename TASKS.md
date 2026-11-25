@@ -14,7 +14,9 @@ Status checked on November 25, 2026 against the repository and GitHub evidence. 
 2. Review and merge the final documents/tests PR, including the completed task and AI records.
 3. Tag the final `main` commit `pa2` once and push that tag.
 4. Verify all four checks on the tag run.
-5. Clone the public repository at that tag, retain `.git`, and create the ZIP with the three actual student IDs in ascending order and the self-assessed total of 95.
+5. Clone the public repository at that tag, retain `.git`, and create the ZIP with the three actual student IDs in ascending order and the self-assessed total of 94.
 6. One member submits using their student email account before November 26, 2026, 22:00 Vietnam time.
 
 No tag or ZIP is claimed complete before those operations actually succeed.
+
+Team identities from the earlier repository report: Nguyen Phan Hung Linh, 23127081; Pham Ngoc Thai, 23127472; Vu Van Vu, 23127543. Required archive name: `23127081-23127472-23127543_94.zip`.
