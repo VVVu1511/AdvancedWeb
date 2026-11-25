@@ -1,0 +1,20 @@
+{
+  "required_status_checks": {
+    "strict": true,
+    "checks": [
+      { "context": "PA02 lint", "app_id": 15368 },
+      { "context": "PA02 format check", "app_id": 15368 },
+      { "context": "PA02 typecheck", "app_id": 15368 },
+      { "context": "PA02 test", "app_id": 15368 }
+    ]
+  },
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 1,
+    "dismiss_stale_reviews": false
+  },
+  "restrictions": null,
+  "required_linear_history": false,
+  "allow_force_pushes": false,
+  "allow_deletions": false
+}
