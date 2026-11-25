@@ -1,0 +1,593 @@
+<title>Lộ trình nhóm E4</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: swimlane timeline (3 lanes × 12 ngày) + panel chi tiết + bảng cặp gửi/trả + thẻ bàn giao cuối */
+:root{
+  --bg:#f5f6f9; --surface:#ffffff; --ink:#1b2230; --muted:#5b6577; --line:#dde2ea; --grid:#eceff4;
+  --vu:#2f6fd6; --vu-soft:#e2ebfb;
+  --linh:#16946a; --linh-soft:#dcf2e8;
+  --thai:#7a4fd0; --thai-soft:#ebe4fa;
+  --final:#c2820c; --final-soft:#fbf0d9;
+  --group:#6b7487; --wait-ink:#a2462c;
+  --font-body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f131a; --surface:#161b24; --ink:#e6eaf1; --muted:#9aa3b4; --line:#2a3240; --grid:#1d2430;
+  --vu:#74a3f2; --vu-soft:#1b2a42; --linh:#4fc897; --linh-soft:#15332a; --thai:#ac8df0; --thai-soft:#272043;
+  --final:#e5b24c; --final-soft:#3a2d12; --group:#8d96a8; --wait-ink:#f0957a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f131a; --surface:#161b24; --ink:#e6eaf1; --muted:#9aa3b4; --line:#2a3240; --grid:#1d2430;
+  --vu:#74a3f2; --vu-soft:#1b2a42; --linh:#4fc897; --linh-soft:#15332a; --thai:#ac8df0; --thai-soft:#272043;
+  --final:#e5b24c; --final-soft:#3a2d12; --group:#8d96a8; --wait-ink:#f0957a; color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1240px;margin:0 auto;padding-block:28px 56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:28px}
+h1{font-size:1.75rem;line-height:1.2;margin:0;text-wrap:balance;font-weight:700}
+h2{font-size:1.15rem;margin:0 0 12px;font-weight:700;text-wrap:balance}
+.lede{color:var(--muted);margin:6px 0 0;max-width:70ch}
+.mono{font-family:var(--font-mono);font-size:.85em}
+
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;font-size:.88rem}
+.lg{display:flex;align-items:center;gap:8px}
+.sw{width:34px;height:14px;border-radius:3px;flex:none}
+.sw.free{background:var(--vu-soft);border:1.5px solid var(--vu)}
+.sw.wait{border:1.5px dashed var(--wait-ink);background:repeating-linear-gradient(45deg,transparent 0 4px,color-mix(in srgb,var(--wait-ink) 35%,transparent) 4px 5.5px)}
+.ln{width:34px;height:0;border-top:2px solid var(--ink);position:relative;flex:none}
+.ln.ret{border-top-style:dashed}
+.ln.fin{border-top:3px solid var(--final)}
+.ln::after{content:"";position:absolute;right:-1px;top:-5px;border:4px solid transparent;border-left:7px solid var(--ink)}
+.ln.fin::after{border-left-color:var(--final);top:-5.5px}
+
+/* filters */
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bar span{color:var(--muted);font-size:.88rem;margin-right:4px}
+.chip{font:inherit;font-size:.88rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  padding:5px 14px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:focus-visible,.hit:focus-visible{outline:2px solid var(--final);outline-offset:2px}
+.chip .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+
+/* chart */
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+.chart svg{display:block}
+svg text{font-family:var(--font-body)}
+.hit{cursor:pointer}
+.hit:hover .bar-rect{filter:brightness(.97)}
+.dim{opacity:.16}
+.sel .bar-rect{stroke-width:2.5}
+
+/* detail */
+.detail{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px;
+  display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.detail .head{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline}
+.detail .code{font-family:var(--font-mono);font-weight:600;font-size:.9rem;padding:2px 8px;border-radius:5px;background:var(--grid)}
+.detail .title{font-weight:700;font-size:1.05rem}
+.pill{font-size:.78rem;font-weight:600;padding:2px 9px;border-radius:999px;letter-spacing:.02em}
+.pill.free{background:var(--linh-soft);color:var(--linh)}
+.pill.wait{background:color-mix(in srgb,var(--wait-ink) 15%,transparent);color:var(--wait-ink)}
+.pill.send{background:var(--grid);color:var(--ink)}
+.pill.final{background:var(--final-soft);color:var(--final)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.cols > div{min-width:0}
+.cols h3{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 6px;font-weight:600}
+.cols ul{margin:0;padding-left:18px}
+.cols li{margin:2px 0}
+.cols p{margin:0}
+
+/* pairs table */
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:.9rem}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+td .who{font-weight:600}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--grid)}
+
+/* final cards */
+.finals{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;min-width:0;border-top:4px solid var(--c)}
+.card h3{margin:0 0 2px;font-size:1.05rem}
+.card .sub{color:var(--muted);font-size:.85rem;margin:0 0 10px}
+.card ul{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:.9rem}
+.card li{display:flex;gap:8px}
+.card li::before{content:"";flex:none;width:12px;height:12px;border:1.5px solid var(--c);border-radius:3px;margin-top:5px}
+.card .to{margin-top:12px;font-size:.85rem;color:var(--muted)}
+.card .to b{color:var(--ink)}
+.note{color:var(--muted);font-size:.88rem;margin:0}
+@media (prefers-reduced-motion:no-preference){.hit,.dim{transition:opacity .15s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Lộ trình nhóm E4: ai làm gì, ai chờ ai</h1>
+    <p class="lede">Seminar A2A "Trust the task state, or verify the outcome?". Ba làn cho Vũ, Linh, Thái theo Ngày 1 → 12. Bấm vào thanh công việc hoặc mũi tên để xem cần làm gì, chờ gì, gửi gì và nhận lại gì. Nguồn: <span class="mono">PLAN.md</span> và <span class="mono">TASK_DIVISION.md</span>.</p>
+  </header>
+
+  <div class="legend" aria-label="Chú giải">
+    <div class="lg"><span class="sw free"></span>Làm được ngay, không cần chờ ai</div>
+    <div class="lg"><span class="sw wait"></span>Phải chờ người khác giao trước</div>
+    <div class="lg"><span class="ln"></span>Gửi đi trong lúc chờ kết quả</div>
+    <div class="lg"><span class="ln ret"></span>Trả kết quả lại</div>
+    <div class="lg"><span class="ln fin"></span>Bàn giao cuối khi xong toàn bộ phần mình</div>
+  </div>
+
+  <div class="bar" role="group" aria-label="Lọc theo người">
+    <span>Xem theo:</span>
+    <button class="chip" id="f-all" data-f="all" aria-pressed="true">Cả nhóm</button>
+    <button class="chip" id="f-vu" data-f="vu" aria-pressed="false"><i class="dot" style="background:var(--vu)"></i>Vũ</button>
+    <button class="chip" id="f-linh" data-f="linh" aria-pressed="false"><i class="dot" style="background:var(--linh)"></i>Linh</button>
+    <button class="chip" id="f-thai" data-f="thai" aria-pressed="false"><i class="dot" style="background:var(--thai)"></i>Thái</button>
+  </div>
+
+  <div class="chart" id="chart"></div>
+
+  <section class="detail" id="detail" aria-live="polite"></section>
+
+  <section>
+    <h2>Gửi đi và nhận lại: các cặp phụ thuộc</h2>
+    <div class="tbl"><table id="pairs">
+      <thead><tr><th>Lần</th><th>Ngày</th><th>Người gửi phải xong rồi gửi</th><th>Người nhận làm gì</th><th>Trả lại</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Bàn giao cuối khi xong toàn bộ phần mình</h2>
+    <div class="finals" id="finals"></div>
+  </section>
+
+  <p class="note">Ngày 1–12 là ngày tương đối, nhóm thay bằng ngày thật khi chốt hạn nộp. Sau Ngày 12: cả nhóm red-team đội khác (Linh chạy lệnh đo, Vũ soi baseline, Thái soi nguồn và số) và tập live nếu được chọn.</p>
+</div>
+
+<script>
+const P = {
+  vu:   {name:"Vũ",   role:"Agents & hạ tầng lỗi",          c:"--vu",   soft:"--vu-soft"},
+  linh: {name:"Linh", role:"Orchestrator & lệnh đo",        c:"--linh", soft:"--linh-soft"},
+  thai: {name:"Thái", role:"Nguồn, phân tích & truyền thông", c:"--thai", soft:"--thai-soft"}
+};
+const LANES = ["vu","linh","thai"];
+
+/* s = bắt đầu (1 = đầu Ngày 1), e = kết thúc (3 = hết Ngày 2) */
+const TASKS = [
+ // ---- Vũ
+ {id:"V1",who:"vu",r:0,s:1,e:3,t:"Spike LangGraph + CrewAI",wait:null,
+  lam:"Dựng 1 agent LangGraph và 1 agent CrewAI expose qua a2a-sdk, gọi thử bằng client. Ghi version thật từ PyPI/GitHub.",out:"Agent mẫu trả lời qua A2A, danh sách version."},
+ {id:"V2",who:"vu",r:0,s:3,e:5,t:"Order agent (LangGraph)",wait:null,
+  lam:"Nhận message, trích trường bằng LLM qua lớp record/replay, ghi DB kèm order_ref, trả artifact.",out:"Order agent chạy bằng một lệnh, có health check."},
+ {id:"V4",who:"vu",r:1,s:3,e:4,t:"Orders DB + read API",wait:null,
+  lam:"SQLite primary, read API GET /orders?ref= có replica lag theo seed, lệnh reset và dump.",out:"Read API đúng hợp đồng H0."},
+ {id:"V3",who:"vu",r:2,s:3,e:4,t:"Rogue agent + Agent Cards",wait:null,
+  lam:"Rogue agent (CrewAI), cards/rogue.json khai khống skill place_order, cards/order.json thật.",out:"2 Agent Card hợp lệ A2A v1.0."},
+ {id:"V5",who:"vu",r:1,s:4,e:6,t:"Bộ tiêm lỗi + fault proxy",wait:null,
+  lam:"infra/faults: sinh và đọc fault_schedule.json theo seed, tiêm L1/L2/F2 trong agent, proxy cắt SSE cho F1.",out:"Lỗi xảy ra đúng lịch, lặp lại được."},
+ {id:"V6",who:"vu",r:0,s:5,e:6,t:"Test từng loại lỗi",wait:null,
+  lam:"Unit test chứng minh L1, L2, L3, F1 (đã ghi/chưa ghi), F2 hoạt động đúng.",out:"Test pass, sẵn sàng gửi H1."},
+ {id:"V7",who:"vu",r:0,s:6,e:7,t:"Sửa bug tích hợp",wait:"H2",
+  lam:"Sửa mọi bug 'chặn freeze' trong báo cáo của Linh, ngay trong Ngày 6. Đồng thời dán bảng version đã xác minh (H3') vào ghi chú Setup.",out:"Commit sửa lỗi gửi lại Linh."},
+ {id:"Vd",who:"vu",r:0,s:7,e:8,t:"Nháp §Setup",wait:null,
+  lam:"Viết nháp mục Setup và Held fixed từ những gì đã có: kiến trúc, version, máy đo.",out:"Bản nháp chờ khung REPORT."},
+ {id:"V8",who:"vu",r:0,s:8,e:9,t:"REPORT §Setup + §Held fixed",wait:"H8",
+  lam:"Viết ~250 từ tiếng Anh theo khung và giới hạn chữ của Thái. Chỉ dùng số trong bảng chính thức.",out:"Đoạn REPORT gửi Thái trong H9."},
+ {id:"V9",who:"vu",r:0,s:9,e:10,t:"Slide đoạn 2",wait:"H8",
+  lam:"Slide kiến trúc, mô hình lỗi, demo theo template của Thái. Mỗi con số ghi chú file log.",out:"Slide phần mình gửi trong H9."},
+ {id:"Vq",who:"vu",r:0,s:10,e:11,t:"Quay đoạn 2 (~2 phút)",wait:"H8",
+  lam:"Quay đoạn 1:30–3:30 theo kịch bản: kiến trúc, mô hình lỗi, chạy lệnh đo.",out:"File video đoạn 2."},
+ {id:"V10",who:"vu",r:0,s:11,e:12,t:"Kiểm số ↔ log",wait:"H11",
+  lam:"Với từng con số trong REPORT và slide, tìm nó trong results/summary.md hoặc log.",out:"Danh sách số không có log hoặc lệch, trả Thái."},
+ {id:"Vf",who:"vu",r:0,s:12,e:13,t:"Duyệt bản cuối",wait:null,lam:"Duyệt REPORT, slide, video bản cuối trước khi nộp.",out:"Xác nhận OK."},
+ // ---- Linh
+ {id:"L1",who:"linh",r:0,s:1,e:3,t:"Spike orchestrator ADK",wait:null,
+  lam:"Orchestrator ADK deterministic gọi agent mẫu qua A2A. Không ổn thì dùng client a2a-sdk thuần.",out:"Quyết định kiến trúc orchestrator."},
+ {id:"L3",who:"linh",r:0,s:3,e:5,t:"Policy trust / verify",wait:null,
+  lam:"Hai policy chung code, chỉ khác một nhánh. Timeout, retry ≤ 2, cửa sổ chờ W. Dùng read API giả cho tới khi có H1.",out:"Hàm policy có test."},
+ {id:"L2",who:"linh",r:1,s:3,e:4,t:"Router (card giả)",wait:null,
+  lam:"Router đọc Agent Card, chấm điểm theo skill bằng luật cố định. Dùng card giả cho tới khi có H1.",out:"Router deterministic."},
+ {id:"L4",who:"linh",r:1,s:4,e:6,t:"measure.py",wait:null,
+  lam:"Start/stop process mỗi run, DB mới, 10 task warm-up, 2 policy × 5 seed, ghi results/.",out:"uv run measure chạy được với agents giả."},
+ {id:"L5",who:"linh",r:0,s:5,e:6,t:"classify.py",wait:null,
+  lam:"Gán nhãn correct / silent_wrong / loud_fail / false_alarm / duplicate từ db_dump.json + events.jsonl.",out:"Nhãn cho từng task; gửi dry-run H4 cho Thái."},
+ {id:"L6",who:"linh",r:0,s:6,e:6.5,t:"Tích hợp agents thật",wait:"H1",
+  lam:"Thay card/API giả bằng đồ thật của Vũ. Chạy 20 task đủ 7 loại lỗi, cả 2 policy, so nhãn với bảng hành vi của Vũ.",out:"Báo cáo tích hợp H2 gửi Vũ."},
+ {id:"L7",who:"linh",r:0,s:6.5,e:7,t:"Replay + FREEZE",wait:"H2↩ + H5",
+  lam:"Chờ Vũ sửa bug (trả lại H2) và đã thêm các trường Thái yêu cầu (H5). Ghi llm_replay/, chạy lại 20 task, gắn tag freeze-v1.",out:"Tag freeze-v1."},
+ {id:"L8",who:"linh",r:0,s:7,e:8,t:"Đo chính thức",wait:null,
+  lam:"Chạy 2 policy × 5 seed + độ nhạy W và fault rate trên code đã freeze.",out:"results/ đầy đủ → gửi H6 cho Thái."},
+ {id:"L9",who:"linh",r:1,s:7,e:9,t:"README.md",wait:null,
+  lam:"Từ fresh clone tới lệnh đo, từng bước, cho Windows và Linux/macOS.",out:"README đủ để người lạ chạy được."},
+ {id:"Lh",who:"linh",r:0,s:8,e:8.6,t:"Xử lý bất thường",wait:"H7",
+  lam:"Điều tra từng bất thường Thái gửi. Bug thì sửa và chạy lại toàn bộ (freeze-v2). Hành vi thật thì giữ số và viết giải thích.",out:"Kết luận từng mục trả Thái."},
+ {id:"L10",who:"linh",r:0,s:8.6,e:10,t:"REPORT §Method/§Limits + slide",wait:"H8",
+  lam:"~250 từ tiếng Anh theo khung của Thái, cùng slide đoạn 3 (log chạy thật, headline kèm spread).",out:"Gửi Thái trong H9."},
+ {id:"Lq",who:"linh",r:0,s:10,e:11,t:"Quay đoạn 3 (~2 phút)",wait:"H8",
+  lam:"Quay đoạn 3:30–5:30 theo kịch bản.",out:"File video đoạn 3."},
+ {id:"L11",who:"linh",r:0,s:11,e:12,t:"Sửa theo fresh clone",wait:"H10",
+  lam:"Sửa README/code theo các bước lỗi trên máy khác. Sửa code đo thì chạy lại toàn bộ và báo Thái.",out:"Commit sửa trả Thái."},
+ {id:"L12",who:"linh",r:1,s:11,e:12,t:"Kiểm nguồn",wait:"H12",
+  lam:"Mở từng link trong sources.md, kiểm câu trích, version, ngày.",out:"Danh sách nguồn có vấn đề trả Thái."},
+ {id:"Lfb",who:"linh",r:0,s:12,e:13,t:"Đăng Facebook",wait:"F-Thái",
+  lam:"Đăng bài #AWADSeminar23KTPM1 do Thái soạn sẵn: tiêu đề, câu hỏi, 1 headline number, link talk.",out:"Bài đã đăng trước hạn."},
+ // ---- Thái
+ {id:"T0",who:"thai",r:0,s:1,e:2,t:"Sheet + CONTRACTS",wait:null,
+  lam:"Cập nhật câu hỏi trên sheet đăng ký. Soạn mục summary.json và danh sách chỉ số trong CONTRACTS.md.",out:"Phần của mình trong H0."},
+ {id:"T1",who:"thai",r:0,s:2,e:5,t:"Kiểm chứng nguồn nền",wait:null,
+  lam:"Đọc bản gốc: spec A2A, OWASP ASI07/08/10, paper false success, A2ABreak, MAST, các GitHub issue. Ghi URL + ngày đọc + câu trích.",out:"docs/sources.md bản đầu."},
+ {id:"T2",who:"thai",r:1,s:3,e:5,t:"Khung analyze.py",wait:null,
+  lam:"Viết analyze.py chạy trên dữ liệu tự tạo theo đúng hợp đồng: median, min–max, IQR, biểu đồ.",out:"Script chạy được trên dữ liệu giả."},
+ {id:"T4",who:"thai",r:0,s:5,e:5.6,t:"analyze trên dry-run",wait:"H4",
+  lam:"Chạy analyze.py trên dữ liệu dry-run của Linh, tìm trường thiếu hoặc khó dùng.",out:"Danh sách yêu cầu H5 gửi Linh trước freeze."},
+ {id:"T3",who:"thai",r:1,s:5.5,e:7,t:"Xác minh version + nguồn lỗi",wait:"H3",
+  lam:"Đối chiếu từng version Vũ gửi với PyPI/GitHub releases. Gắn nguồn thực tế cho từng loại lỗi L1–F2.",out:"H3' trả Vũ: bảng version có nguồn + sửa sai."},
+ {id:"Td",who:"thai",r:0,s:7,e:8,t:"Đọc nguồn bổ sung",wait:null,
+  lam:"Hoàn thiện sources.md, chuẩn bị luận điểm cho phần Findings và 'When NOT to use'.",out:"sources.md gần hoàn chỉnh."},
+ {id:"T5",who:"thai",r:0,s:8,e:8.6,t:"Phân tích số thật",wait:"H6",
+  lam:"Chạy analyze.py trên results/ chính thức, so với dự đoán PLAN §1.7, đánh dấu bất thường.",out:"Bảng số chính thức hoặc H7 gửi Linh."},
+ {id:"T6",who:"thai",r:1,s:8,e:8.4,t:"Khung REPORT/slide/talk",wait:null,
+  lam:"Khung REPORT (mục, chủ, giới hạn chữ), template slide, kịch bản talk có mốc thời gian.",out:"Gửi H8 cho Vũ và Linh."},
+ {id:"T7",who:"thai",r:0,s:8.6,e:10,t:"Viết §Question/§Findings/§Rec.",wait:null,
+  lam:"Viết Question, Findings, Recommendation, When NOT to use, Sources bằng tiếng Anh, chỉ dùng số trong bảng chính thức.",out:"Phần REPORT của mình."},
+ {id:"T8",who:"thai",r:1,s:8.4,e:10,t:"Slide phần mình + template",wait:null,
+  lam:"Slide đoạn 1 và đoạn 4, biểu đồ từ analyze.py, mỗi số có chú thích file log.",out:"Slide phần mình."},
+ {id:"T9",who:"thai",r:0,s:10,e:11,t:"Ghép REPORT, slide, video",wait:"H9",
+  lam:"Ghép REPORT ≤ 3 trang, xuất slides.pdf, quay đoạn 1 + 4, ghép video ≤ 8 phút, TALK.md, gom AI-LOG và SELF_ASSESSMENT.",out:"Bản ghép cho cả nhóm duyệt."},
+ {id:"T10",who:"thai",r:0,s:11,e:12,t:"Tự red-team",wait:null,
+  lam:"Clone repo về máy khác, chạy theo README (H10). Gửi REPORT+slide cho Vũ (H11), sources cho Linh (H12).",out:"3 yêu cầu kiểm tra đã gửi."},
+ {id:"T10b",who:"thai",r:1,s:11.6,e:12,t:"Sửa theo phản hồi",wait:"H10–12↩",
+  lam:"Sửa REPORT, slide, sources theo danh sách Vũ và Linh trả lại. Chạy lại fresh clone tới khi qua.",out:"Bản cuối sạch lỗi."},
+ {id:"T11",who:"thai",r:0,s:12,e:13,t:"Nộp zip",wait:null,
+  lam:"Nộp <MSSV1>-<MSSV2>-<MSSV3>_<total>.zip có .git. Gửi bài đăng soạn sẵn cho Linh.",out:"Đã nộp."}
+];
+
+/* type: send | return | final ; x = vị trí trên trục ngày */
+const HANDS = [
+ {id:"H1",type:"send",from:"vu",to:["linh"],x:5.95,day:"cuối Ngày 5",pair:"H2",t:"Agents, DB và bộ lỗi chạy được",
+  before:"V2–V6 xong, test pass. Tự gửi message A2A và thấy đơn xuất hiện trong read API sau lag.",
+  send:["Link PR đã merge (agents + infra)","Lệnh khởi động + health check từng service","Đường dẫn 2 Agent Card","Cách truyền FAULT_SCHEDULE và seed lag","Lệnh reset (đầu run) và dump (cuối run) DB","Bảng lỗi → hành vi mong đợi → dấu hiệu trong DB","Giới hạn đã biết"],
+  recv:"Linh thay đồ giả bằng đồ thật, chạy 20 task đủ 7 loại lỗi, cả 2 policy, so nhãn classify.py với bảng hành vi.",
+  back:"H2: báo cáo tích hợp + danh sách bug."},
+ {id:"H2",type:"return",from:"linh",to:["vu"],x:6.22,day:"sáng Ngày 6",pair:"H1",t:"Báo cáo tích hợp",
+  before:"Đã chạy 20 task với agents thật.",
+  send:["results/dryrun/ của 20 task","Bảng loại lỗi × policy: nhãn thực tế vs mong đợi (✅/❌)","Danh sách bug: bước tái hiện, log, mức độ (chặn freeze hay không)","Những gì orchestrator cần thêm (vd. trường trong artifact)"],
+  recv:"Vũ sửa mọi bug chặn freeze trong Ngày 6.",
+  back:"Commit sửa lỗi + ghi chú bug nào đã sửa. Bug không sửa thì ghi lý do và cách đưa vào §Limits. Linh chạy lại rồi FREEZE."},
+ {id:"H3",type:"send",from:"vu",to:["thai"],x:5.42,day:"Ngày 5",pair:"H3'",t:"Versions và bảng lỗi",
+  before:"Đã pin dependency trong uv.lock, mô hình lỗi đã code xong.",
+  send:["Bảng package → version thật (a2a-sdk, google-adk, langgraph, crewai, Python…)","Phiên bản giao thức A2A agents thực sự nói (v1.0 hay có lớp v0.3)","Bảng lỗi L1–F2 kèm vị trí code","Thông tin máy đo: CPU, RAM, OS"],
+  recv:"Thái đối chiếu từng version với PyPI/GitHub, ghi ngày phát hành + ngày đọc, gắn nguồn thực tế cho từng loại lỗi, ghi lại chỗ assistant sai cho AI-LOG.",
+  back:"H3': bảng version đã xác minh + danh sách sửa sai + bảng lỗi có trích dẫn."},
+ {id:"H3'",type:"return",from:"thai",to:["vu"],x:6.85,day:"Ngày 6",pair:"H3",t:"Nguồn đã kiểm chứng",
+  before:"Đã đọc bản gốc của mọi nguồn.",
+  send:["Bảng version có cột 'nguồn' và 'ngày đọc' để dán vào §Setup","Danh sách sửa sai (nếu có), Vũ sửa trước freeze","Bảng lỗi có trích dẫn, dùng chung cho REPORT và slide"],
+  recv:"Vũ sửa code hoặc ghi chú trước freeze, dùng bảng trong §Setup.",back:"Xác nhận đã cập nhật."},
+ {id:"H4",type:"send",from:"linh",to:["thai"],x:5.12,day:"Ngày 5",pair:"H5",t:"Dữ liệu dry-run",
+  before:"measure.py + classify.py chạy được, kể cả với agents giả.",
+  send:["results/dryrun-fake/ đúng cấu trúc hợp đồng","Mô tả chỗ nào là dữ liệu giả, trường nào còn thiếu"],
+  recv:"Thái chạy analyze.py, dựng thử bảng và biểu đồ, liệt kê trường thiếu hoặc khó dùng.",
+  back:"H5: yêu cầu bổ sung trường."},
+ {id:"H5",type:"return",from:"thai",to:["linh"],x:5.68,day:"Ngày 5–6, trước freeze",pair:"H4",t:"Yêu cầu bổ sung dữ liệu",
+  before:"Đã chạy analyze.py trên dry-run.",
+  send:["Danh sách trường cần thêm/sửa trong events.jsonl / summary.json + lý do (vd. verify_wait_ms)","Bản nháp bảng kết quả và biểu đồ dự kiến"],
+  recv:"Linh bổ sung trường TRƯỚC freeze, cập nhật CONTRACTS.md.",
+  back:"Commit + dòng xác nhận 'đã có trường X, Y'. Sau freeze mọi yêu cầu thêm trường buộc chạy lại toàn bộ."},
+ {id:"H6",type:"send",from:"linh",to:["thai"],x:7.92,day:"cuối Ngày 7",pair:"H7",t:"Kết quả đo chính thức",
+  before:"Đã freeze, chạy đủ 2 policy × 5 seed + độ nhạy, mọi run có env.json với commit hash.",
+  send:["Commit hash/tag + lệnh chính xác đã chạy","results/ đầy đủ đã commit","Mô tả máy và điều kiện chạy","Điều bất thường thấy khi chạy"],
+  recv:"Thái chạy analyze.py → summary.md + biểu đồ, so với dự đoán, đánh dấu số bất thường.",
+  back:"Bảng số chính thức (nguồn duy nhất cho REPORT/slide), hoặc H7 nếu có bất thường."},
+ {id:"H7",type:"return",from:"thai",to:["linh"],x:8.62,day:"Ngày 8 (nếu có)",pair:"H6",t:"Bất thường cần xem lại",
+  before:"Đã phân tích toàn bộ results/.",
+  send:["Mỗi bất thường: file log, task_id/seed, con số, lý do nghi ngờ"],
+  recv:"Linh điều tra. Bug thì sửa + chạy lại toàn bộ (freeze-v2). Hành vi thật thì giữ số, viết giải thích.",
+  back:"Kết luận từng mục + results/ mới nếu chạy lại. Thái chạy lại analyze.py và chốt số."},
+ {id:"H8",type:"send",from:"thai",to:["vu","linh"],x:8.4,day:"Ngày 8",pair:"H9",t:"Khung REPORT, slide, talk",
+  before:"Đã chốt bảng số chính thức.",
+  send:["REPORT khung: mục, chủ từng mục, giới hạn chữ (Vũ ~250, Linh ~250 từ)","Template slide + danh sách slide của từng người","Kịch bản talk: Thái 0:00–1:30, Vũ 1:30–3:30, Linh 3:30–5:30, Thái 5:30–7:30","Bảng số chính thức: CHỈ được dùng số trong bảng này"],
+  recv:"Vũ và Linh viết phần REPORT, làm slide, quay đoạn talk của mình.",
+  back:"H9: nội dung phần mình."},
+ {id:"H9",type:"return",from:["vu","linh"],to:["thai"],x:9.93,day:"Ngày 9 (video Ngày 10)",pair:"H8",t:"Nội dung phần mình",
+  before:"Đã viết xong phần mình đúng giới hạn chữ, bằng tiếng Anh.",
+  send:["Đoạn REPORT của mình","Slide phần mình, mỗi số có chú thích file log","File video đoạn talk","Mục AI-LOG của mình (có ≥ 1 lỗi assistant đã bắt)","Dòng bằng chứng SELF_ASSESSMENT cho tiêu chí mình chủ trì"],
+  recv:"Thái ghép REPORT ≤ 3 trang, xuất slides.pdf, ghép video ≤ 8 phút, gom AI-LOG và SELF_ASSESSMENT.",
+  back:"Bản ghép để cả nhóm duyệt, ghi rõ chỗ đã cắt/sửa phần của người khác."},
+ {id:"H10",type:"send",from:"thai",to:["linh"],x:11.1,day:"Ngày 11",pair:"H10↩",t:"Fresh clone trên máy khác",
+  before:"Đã clone repo public về máy chưa từng chạy dự án, chỉ làm theo README.",
+  send:["Từng bước đã làm, bước nào lỗi, log nguyên văn","Số thu được so với REPORT, có nằm trong spread không"],
+  recv:"Linh sửa README/code. Sửa code đo thì chạy lại toàn bộ.",back:"Commit đã sửa; Thái chạy lại từ đầu tới khi qua."},
+ {id:"H10↩",type:"return",from:"linh",to:["thai"],x:11.55,day:"Ngày 11",pair:"H10",t:"README/code đã sửa",
+  before:"Đã sửa mọi bước lỗi.",send:["Commit đã sửa + bước nào đã sửa","Số mới nếu đã chạy lại"],recv:"Thái chạy lại fresh clone.",back:"—"},
+ {id:"H11",type:"send",from:"thai",to:["vu"],x:11.25,day:"Ngày 11",pair:"H11↩",t:"Kiểm tra truy vết số",
+  before:"REPORT và slide đã là bản cuối.",send:["REPORT.md + slides.pdf bản cuối"],
+  recv:"Vũ tìm từng con số trong results/summary.md hoặc log.",back:"Danh sách số không có log/lệch + chỗ baseline có thể bị coi là khác hơn 1 điểm."},
+ {id:"H11↩",type:"return",from:"vu",to:["thai"],x:11.75,day:"Ngày 11",pair:"H11",t:"Số không truy vết được",
+  before:"Đã kiểm hết mọi con số.",send:["Danh sách số không có log hoặc lệch","Chỗ baseline đáng ngờ"],recv:"Thái sửa hết trước khi nộp.",back:"—"},
+ {id:"H12",type:"send",from:"thai",to:["linh"],x:11.4,day:"Ngày 11",pair:"H12↩",t:"Kiểm tra nguồn",
+  before:"sources.md và REPORT §Sources là bản cuối.",send:["docs/sources.md + REPORT §Sources"],
+  recv:"Linh mở từng link, kiểm câu trích, version, ngày.",back:"Danh sách nguồn chết / thứ cấp cần thay / câu nguồn không ủng hộ."},
+ {id:"H12↩",type:"return",from:"linh",to:["thai"],x:11.88,day:"Ngày 11",pair:"H12",t:"Nguồn có vấn đề",
+  before:"Đã mở hết các link.",send:["Danh sách nguồn có vấn đề"],recv:"Thái sửa hoặc bỏ fact đó.",back:"—"},
+ // ---- bàn giao cuối
+ {id:"F-Vũ",type:"final",from:"vu",to:["thai"],x:10.85,day:"cuối Ngày 10",t:"Vũ bàn giao toàn bộ phần mình",
+  before:"Đã xong V1–V9, video đoạn 2 đã gửi.",send:[],recv:"Thái đưa vào bản nộp.",back:"—"},
+ {id:"F-Linh",type:"final",from:"linh",to:["thai"],x:12.3,day:"đầu Ngày 12",t:"Linh bàn giao toàn bộ phần mình",
+  before:"Đã xong L1–L12, README qua được fresh clone.",send:[],recv:"Thái đưa vào bản nộp.",back:"—"},
+ {id:"F-Thái",type:"final",from:"thai",to:["out"],x:12.75,day:"Ngày 12",t:"Thái nộp bài cho giảng viên",
+  before:"REPORT, slide, video, AI-LOG, SELF_ASSESSMENT đã được cả nhóm duyệt; mọi phản hồi H10–H12 đã xử lý.",send:[],recv:"Linh nhận bài đăng soạn sẵn và đăng Facebook.",back:"—"}
+];
+
+const FINALS = {
+ vu:{to:"Thái (để ghép bản nộp) và Linh (đồ chạy thí nghiệm)",items:[
+  "agents/order_agent_langgraph/ và agents/rogue_agent_crewai/ chạy bằng một lệnh, có health check",
+  "agents/cards/order.json, rogue.json hợp lệ A2A v1.0",
+  "infra/orders_db/: primary DB, read API có lag, lệnh reset và dump",
+  "infra/faults/: generate(seed, rate, mix), load(path), fault proxy F1",
+  "Test chứng minh L1, L2, L3, F1, F2 đúng hành vi",
+  "Bảng version thật từ uv.lock, có nguồn (sau H3')",
+  "REPORT §Setup + §Held fixed, slide và video đoạn 2",
+  "≥ 1 mục AI-LOG 'assistant sai, mình bắt được'",
+  "Dòng bằng chứng tiêu chí 1 trong SELF_ASSESSMENT"]},
+ linh:{to:"Thái (để phân tích, ghép bản nộp) và cả nhóm",items:[
+  "orchestrator/ với router + 2 policy, khác biệt nằm gọn trong một hàm",
+  "uv run measure chạy từ fresh clone, mặc định replay, in bảng tóm tắt",
+  "results/<policy>/<seed>/: events.jsonl, fault_schedule.json, db_dump.json, summary.json, env.json",
+  "results/sensitivity/ cho W và fault rate",
+  "bench/fixtures/llm_replay/ + ghi chú chi phí live",
+  "README.md đã qua fresh clone trên máy khác (H10)",
+  "REPORT §Method + §Limits, slide và video đoạn 3",
+  "≥ 1 mục AI-LOG 'assistant sai, mình bắt được'",
+  "Dòng bằng chứng tiêu chí 2 trong SELF_ASSESSMENT"]},
+ thai:{to:"Giảng viên (zip) và Linh (bài đăng Facebook)",items:[
+  "docs/sources.md: mọi fact có URL chính thức + ngày đọc",
+  "bench/analyze.py → results/summary.md + figures/*.png",
+  "REPORT.md ≤ 3 trang, dòng đầu là link repo, mọi số có trong summary.md",
+  "slides.pdf, video ≤ 8 phút (cả 3 cùng nói), TALK.md",
+  "Bài đăng Facebook soạn sẵn cho Linh",
+  "≥ 1 mục AI-LOG 'assistant sai, mình bắt được'",
+  "Dòng bằng chứng tiêu chí 3, 4, 5 trong SELF_ASSESSMENT",
+  "Zip <MSSV1>-<MSSV2>-<MSSV3>_<total>.zip có .git, đã nộp"]}
+};
+
+/* ---------- geometry ---------- */
+const COLW=100, LEFT=112, TOP=58, ROWH=34, LANEPAD=12, GUT=40, RIGHT=20;
+const W = LEFT + 12*COLW + RIGHT;
+const xOf = d => LEFT + (d-1)*COLW;
+const lanes = {}; let y = TOP;
+LANES.forEach((k,i)=>{
+  const rows = Math.max(...TASKS.filter(t=>t.who===k).map(t=>t.r))+1;
+  const h = rows*ROWH + LANEPAD*2;
+  lanes[k] = {top:y, bottom:y+h, h};
+  y += h + GUT;
+});
+const OUT_Y = y - GUT + 26;
+const H = OUT_Y + 40;
+
+const NS="http://www.w3.org/2000/svg";
+const el=(n,a={},p)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+const css=v=>`var(${v})`;
+
+const svg=el("svg",{viewBox:`0 0 ${W} ${H}`,width:W,height:H,role:"img","aria-label":"Timeline công việc và bàn giao của Vũ, Linh, Thái theo Ngày 1 đến 12"});
+document.getElementById("chart").appendChild(svg);
+
+const defs=el("defs",{},svg);
+LANES.forEach(k=>{
+  const pat=el("pattern",{id:"hatch-"+k,width:6,height:6,patternUnits:"userSpaceOnUse",patternTransform:"rotate(45)"},defs);
+  el("rect",{width:6,height:6,style:`fill:var(--surface)`},pat);
+  el("line",{x1:0,y1:0,x2:0,y2:6,style:`stroke:var(${P[k].c});stroke-width:2;opacity:.35`},pat);
+});
+[["ah-ink","--ink"],["ah-final","--final"]].forEach(([id,c])=>{
+  const m=el("marker",{id,viewBox:"0 0 10 10",refX:9,refY:5,markerWidth:7,markerHeight:7,orient:"auto-start-reverse"},defs);
+  el("path",{d:"M0,0 L10,5 L0,10 z",style:`fill:var(${c})`},m);
+});
+
+/* grid + day headers */
+const gGrid=el("g",{},svg);
+for(let d=1; d<=12; d++){
+  const x=xOf(d);
+  if(d%2===0) el("rect",{x,y:TOP-8,width:COLW,height:OUT_Y-TOP+16,style:"fill:var(--grid);opacity:.55"},gGrid);
+  const t=el("text",{x:x+COLW/2,y:TOP-26,"text-anchor":"middle",style:"fill:var(--muted);font-size:11px;font-weight:600;letter-spacing:.06em"},gGrid); t.textContent="NGÀY";
+  const n=el("text",{x:x+COLW/2,y:TOP-12,"text-anchor":"middle",style:"fill:var(--ink);font-size:14px;font-weight:700"},gGrid); n.textContent=d;
+}
+/* lane labels + bands */
+LANES.forEach(k=>{
+  const L=lanes[k];
+  el("rect",{x:8,y:L.top,width:W-16,height:L.h,rx:8,style:`fill:var(${P[k].soft});opacity:.35`},gGrid);
+  el("rect",{x:8,y:L.top,width:5,height:L.h,rx:2,style:`fill:var(${P[k].c})`},gGrid);
+  const a=el("text",{x:22,y:L.top+22,style:`fill:var(${P[k].c});font-size:15px;font-weight:700`},gGrid); a.textContent=P[k].name;
+  const words=P[k].role.split(" "); let line="",ly=L.top+40;
+  words.forEach((w,i)=>{ if((line+" "+w).trim().length>14){const t=el("text",{x:22,y:ly,style:"fill:var(--muted);font-size:10.5px"},gGrid);t.textContent=line.trim();line=w;ly+=13;} else line+=" "+w; });
+  const t=el("text",{x:22,y:ly,style:"fill:var(--muted);font-size:10.5px"},gGrid);t.textContent=line.trim();
+});
+/* out band */
+el("line",{x1:LEFT,y1:OUT_Y,x2:W-RIGHT,y2:OUT_Y,style:"stroke:var(--line);stroke-dasharray:3 4"},gGrid);
+const ot=el("text",{x:22,y:OUT_Y+4,style:"fill:var(--muted);font-size:11px;font-weight:600"},gGrid); ot.textContent="Nộp / đăng";
+
+/* group milestones */
+const gMil=el("g",{},svg);
+function vband(x1,x2,label,sub){
+  el("rect",{x:x1,y:TOP-6,width:x2-x1,height:OUT_Y-TOP+12,rx:4,style:"fill:none;stroke:var(--group);stroke-width:1.2;stroke-dasharray:4 3"},gMil);
+  const t=el("text",{x:x1+6,y:OUT_Y-8,style:"fill:var(--group);font-size:10.5px;font-weight:700"},gMil);t.textContent=label;
+  if(sub){const s=el("text",{x:x1+6,y:OUT_Y+6,style:"fill:var(--group);font-size:10px"},gMil);s.textContent=sub;}
+}
+vband(xOf(1)+2,xOf(1.85),"H0 · cả nhóm","CONTRACTS.md");
+const fx=xOf(7);
+el("line",{x1:fx,y1:TOP-6,x2:fx,y2:OUT_Y+6,style:"stroke:var(--wait-ink);stroke-width:2"},gMil);
+const fz=el("text",{x:fx+5,y:OUT_Y+6,style:"fill:var(--wait-ink);font-size:10.5px;font-weight:700"},gMil); fz.textContent="FREEZE (sau đây sửa code = chạy lại hết)";
+
+/* tasks */
+const gTask=el("g",{},svg);
+const nodes=[];
+TASKS.forEach(t=>{
+  const L=lanes[t.who], x=xOf(t.s)+2, w=(t.e-t.s)*COLW-4, yy=L.top+LANEPAD+t.r*ROWH, h=ROWH-6;
+  const g=el("g",{class:"hit",tabindex:0,role:"button","data-id":t.id,"data-who":t.who,"aria-label":`${t.id} ${t.t}${t.wait?" — chờ "+t.wait:""}`},gTask);
+  const isWait=!!t.wait;
+  el("rect",{class:"bar-rect",x,y:yy,width:w,height:h,rx:5,
+    style:isWait?`fill:url(#hatch-${t.who});stroke:var(--wait-ink);stroke-width:1.4;stroke-dasharray:5 3`
+                :`fill:var(${P[t.who].soft});stroke:var(${P[t.who].c});stroke-width:1.4`},g);
+  const label=el("text",{x:x+7,y:yy+h/2+4,style:"fill:var(--ink);font-size:11.5px;font-weight:500"},g);
+  const code=el("tspan",{style:`font-weight:700;fill:var(${P[t.who].c})`},label); code.textContent=t.id+" ";
+  const rest=el("tspan",{},label); rest.textContent=t.t;
+  nodes.push({g,label,rest,w,code,t,x,yy,h});
+  g.addEventListener("click",()=>select(t.id));
+  g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(t.id)}});
+});
+/* fit labels: shorten text that overflows its bar */
+function fitLabels(){
+  nodes.forEach(n=>{
+    n.rest.textContent=n.t.t;
+    let full=n.t.t;
+    const max=n.w-12;
+    while(n.label.getComputedTextLength()>max && full.length>0){
+      full=full.slice(0,-1); n.rest.textContent=full.trimEnd()+"…";
+      if(full.length<=1){n.rest.textContent="";break;}
+    }
+    if(n.t.wait && n.w>120){
+      // small wait tag on the right if space
+    }
+  });
+}
+
+/* handoffs */
+const gHand=el("g",{},svg);
+const gutterCount={};
+function laneEdge(from,to){
+  const a=lanes[from], b= to==="out"?{top:OUT_Y-2,bottom:OUT_Y}:lanes[to];
+  const down = b.top > a.top;
+  return {y1: down? a.bottom : a.top, y2: down? b.top : b.bottom, down};
+}
+HANDS.forEach(h=>{
+  const froms = Array.isArray(h.from)?h.from:[h.from];
+  const g=el("g",{class:"hit",tabindex:0,role:"button","data-id":h.id,"data-who":[...froms,...h.to].join(" "),"aria-label":`${h.id} ${h.t}`},gHand);
+  const x=xOf(h.x);
+  const color = h.type==="final"?"--final":"--ink";
+  froms.forEach(f=>h.to.forEach(tg=>{
+    const {y1,y2,down}=laneEdge(f,tg);
+    const pad = down? 2 : -2;
+    el("line",{x1:x,y1:y1+pad,x2:x,y2:y2-pad,style:"stroke:var(--surface);stroke-width:6;opacity:.9"},g);
+    el("line",{x1:x,y1:y1+pad,x2:x,y2:y2-pad*2,"marker-end":`url(#${h.type==="final"?"ah-final":"ah-ink"})`,
+      style:`stroke:var(${color});stroke-width:${h.type==="final"?3:1.8};${h.type==="return"?"stroke-dasharray:5 4;":""}`},g);
+    // dot at source
+    el("circle",{cx:x,cy:y1+pad,r:3.2,style:`fill:var(${color})`},g);
+  }));
+  // label pill near destination gutter
+  const first=laneEdge(froms[0],h.to[0]);
+  const key = first.down? Math.round(first.y2) : Math.round(first.y2);
+  gutterCount[key]=(gutterCount[key]||0)+1;
+  const off = (gutterCount[key]%2? -1:1)*9;
+  const ly = first.down? first.y2 - GUT/2 + off : first.y2 + GUT/2 + off;
+  const txt=el("text",{x,y:ly+3.5,"text-anchor":"middle",style:`font-family:var(--font-mono);font-size:9.5px;font-weight:600;fill:var(${h.type==="final"?"--final":"--ink"})`});
+  txt.textContent=h.id;
+  g.appendChild(txt);
+  const bb=txt.getBBox?null:null;
+  const pw=h.id.length*6.2+8;
+  const pill=el("rect",{x:x-pw/2,y:ly-6.5,width:pw,height:13,rx:6.5,style:`fill:var(--surface);stroke:var(${h.type==="final"?"--final":"--line"});stroke-width:1`});
+  g.insertBefore(pill,txt);
+  g.addEventListener("click",()=>select(h.id));
+  g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(h.id)}});
+});
+
+/* ---------- detail panel ---------- */
+const detail=document.getElementById("detail");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const whoName=w=>w==="out"?"Giảng viên / Facebook":P[w].name;
+function waitInfo(code){
+  const h=HANDS.find(x=>x.id===code||x.id===code.replace("↩",""));
+  return h;
+}
+function select(id){
+  document.querySelectorAll(".hit.sel").forEach(n=>n.classList.remove("sel"));
+  document.querySelectorAll(`.hit[data-id="${CSS.escape(id)}"]`).forEach(n=>n.classList.add("sel"));
+  const t=TASKS.find(x=>x.id===id);
+  if(t){
+    const s=Math.floor(t.s), e=Math.ceil(t.e)-1;
+    const dayTxt = s===e?`Ngày ${s}`:`Ngày ${s}–${e}`;
+    let waitHtml;
+    if(t.wait){
+      const codes=t.wait.split(/\s*\+\s*/);
+      waitHtml = `<ul>${codes.map(c=>{const h=HANDS.find(x=>x.id===c.trim());
+        return `<li><b>${esc(c)}</b>${h?` từ ${esc([].concat(h.from).map(whoName).join(", "))}: ${esc(h.t)} (${esc(h.day)})`:""}</li>`}).join("")}</ul>`;
+    } else waitHtml="<p>Không chờ ai. Bắt đầu được ngay khi tới ngày.</p>";
+    detail.innerHTML=`
+      <div class="head"><span class="code">${esc(t.id)}</span><span class="title">${esc(t.t)}</span>
+        <span class="pill ${t.wait?"wait":"free"}">${t.wait?"Phải chờ "+esc(t.wait):"Làm được ngay"}</span>
+        <span style="color:var(--muted);font-size:.9rem">${esc(P[t.who].name)} · ${dayTxt}</span></div>
+      <div class="cols">
+        <div><h3>Cần làm</h3><p>${esc(t.lam)}</p></div>
+        <div><h3>Chờ gì trước</h3>${waitHtml}</div>
+        <div><h3>Xong khi / đầu ra</h3><p>${esc(t.out)}</p></div>
+      </div>`;
+    return;
+  }
+  const h=HANDS.find(x=>x.id===id); if(!h) return;
+  const froms=[].concat(h.from).map(whoName).join(", "), tos=h.to.map(whoName).join(", ");
+  const kind={send:["send","Gửi đi, chờ phản hồi"],return:["send","Trả kết quả lại"],final:["final","Bàn giao cuối"]}[h.type];
+  let sendBlock;
+  if(h.type==="final"){
+    const k=[].concat(h.from)[0];
+    sendBlock=`<ul>${FINALS[k].items.map(i=>`<li>${esc(i)}</li>`).join("")}</ul>`;
+  } else sendBlock=`<ul>${h.send.map(i=>`<li>${esc(i)}</li>`).join("")}</ul>`;
+  detail.innerHTML=`
+    <div class="head"><span class="code">${esc(h.id)}</span><span class="title">${esc(h.t)}</span>
+      <span class="pill ${kind[0]}">${kind[1]}</span>
+      <span style="color:var(--muted);font-size:.9rem">${esc(froms)} → ${esc(tos)} · ${esc(h.day)}${h.pair?` · cặp với ${esc(h.pair)}`:""}</span></div>
+    <div class="cols">
+      <div><h3>Người gửi phải xong trước</h3><p>${esc(h.before)}</p></div>
+      <div><h3>Gửi những gì</h3>${sendBlock}</div>
+      <div><h3>Người nhận làm gì</h3><p>${esc(h.recv)}</p></div>
+      <div><h3>Trả lại</h3><p>${esc(h.back)}</p></div>
+    </div>`;
+}
+
+/* ---------- filters ---------- */
+document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed","false"));
+  b.setAttribute("aria-pressed","true");
+  const f=b.dataset.f;
+  document.querySelectorAll("#chart .hit").forEach(n=>{
+    const who=n.dataset.who.split(" ");
+    n.classList.toggle("dim", f!=="all" && !who.includes(f));
+  });
+  try{localStorage.setItem("e4-filter",f)}catch(e){}
+}));
+
+/* ---------- pairs table ---------- */
+const tb=document.querySelector("#pairs tbody");
+HANDS.filter(h=>h.type==="send").forEach(h=>{
+  const r=HANDS.find(x=>x.id===h.pair);
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td><span class="code mono">${esc(h.id)} → ${esc(h.pair)}</span></td>
+    <td>${esc(h.day)}</td>
+    <td><span class="who" style="color:var(${P[[].concat(h.from)[0]].c})">${esc([].concat(h.from).map(whoName).join(", "))}</span> → ${esc(h.to.map(whoName).join(", "))}: <b>${esc(h.t)}</b><br><span style="color:var(--muted)">${esc(h.before)}</span></td>
+    <td>${esc(h.recv)}</td>
+    <td>${esc(r?r.t+": "+h.back:h.back)}</td>`;
+  tr.tabIndex=0;
+  tr.addEventListener("click",()=>{select(h.id);document.getElementById("detail").scrollIntoView({behavior:"smooth",block:"nearest"})});
+  tr.addEventListener("keydown",e=>{if(e.key==="Enter"){select(h.id)}});
+  tb.appendChild(tr);
+});
+
+/* ---------- final cards ---------- */
+const fin=document.getElementById("finals");
+LANES.forEach(k=>{
+  const c=document.createElement("article"); c.className="card"; c.style.setProperty("--c",`var(${P[k].c})`);
+  const fh=HANDS.find(h=>h.type==="final"&&[].concat(h.from)[0]===k);
+  c.innerHTML=`<h3>${esc(P[k].name)}</h3><p class="sub">${esc(P[k].role)} · bàn giao ${esc(fh.day)}</p>
+    <ul>${FINALS[k].items.map(i=>`<li>${esc(i)}</li>`).join("")}</ul>
+    <p class="to">Giao cho: <b>${esc(FINALS[k].to)}</b></p>`;
+  fin.appendChild(c);
+});
+
+/* init */
+function init(){
+  fitLabels();
+  select("H1");
+  let f="all"; try{f=localStorage.getItem("e4-filter")||"all"}catch(e){}
+  const b=document.querySelector(`.chip[data-f="${f}"]`); if(b&&f!=="all") b.click();
+}
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(init); else init();
+</script>
