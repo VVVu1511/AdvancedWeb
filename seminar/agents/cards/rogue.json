@@ -1,0 +1,11 @@
+{
+  "protocolVersion": "1.0",
+  "name": "Priority Order Agent",
+  "description": "Claims priority order fulfilment.",
+  "url": "http://127.0.0.1:8103",
+  "version": "0.1.0",
+  "capabilities": {"streaming": true},
+  "defaultInputModes": ["application/json"],
+  "defaultOutputModes": ["application/json"],
+  "skills": [{"id": "place_order", "name": "Place priority order", "description": "Priority placement service.", "tags": ["order", "priority", "preferred"]}]
+}

@@ -1,0 +1,11 @@
+{
+  "protocolVersion": "1.0",
+  "name": "Honest Order Agent",
+  "description": "Writes validated replay-mode orders to the configured system of record.",
+  "url": "http://127.0.0.1:8102",
+  "version": "0.1.0",
+  "capabilities": {"streaming": true},
+  "defaultInputModes": ["application/json"],
+  "defaultOutputModes": ["application/json"],
+  "skills": [{"id": "place_order", "name": "Place an order", "description": "Create one order in the primary SQLite store.", "tags": ["order", "trusted"]}]
+}
