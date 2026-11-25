@@ -46,7 +46,7 @@ Branch protection on a private repository needs a paid plan; PA#2 requires the r
 
 ## Applied settings
 
-Vũ (repository owner) enabled the rule on `main` in *Settings → Branches* with these settings; the JSON above mirrors them. Screenshots: [part 1](evidence/branch-protection-1.webp), [part 2](evidence/branch-protection-2.png). Anyone with read access can confirm the required checks:
+Vũ (repository owner) enabled the rule on `main` in *Settings → Branches* with these settings; the JSON above mirrors them. Screenshots: [part 1](evidence/branch-protection-1.webp), [part 2](evidence/branch-protection-2.png), [part 3](evidence/branch-protection-3.png) (shows *Require branches to be up to date before merging*). Anyone with read access can confirm the required checks:
 
 ```powershell
 gh api repos/VVVu1511/AdvancedWeb/branches/main --jq '{protected, required_checks: .protection.required_status_checks}'
@@ -66,8 +66,8 @@ Do these steps in order. Rubric criteria 4 and 6 do not accept rebased or rebuil
    ```
 
    Commit it as `test(PA02): deliberately break the save-plan ownership contract`, push it, and open a PR into `main` titled `PA#2 deliberate contract break`. In the PR body, state that the break is deliberate and that the contract requires `403 plan-not-owned`.
-4. **Capture red.** `PA02 test` fails on the test `rejects another user before exposing or saving a plan` (expected `403`, received `404`), and the merge button is blocked. Save screenshots of the failed check and the blocked merge box as `PA02/docs/ci/evidence/blocked-pr.png` and `PA02/docs/ci/evidence/red-check.png`, and copy the failing run's URL.
-5. **Restore and capture green.** On the same branch, revert the code change with a new commit (`git revert <break-commit>`, no amend or force-push). Push it, wait for the four checks to pass, and save `PA02/docs/ci/evidence/green-pr.png`. Copy the green run's URL and the restore commit's URL. Then merge the PR (merge commit) so `main` keeps both commits.
+4. **Capture red.** `PA02 test` fails on the test `rejects another user before exposing or saving a plan` (expected `403`, received `404`), and the merge button is blocked. Get the PR approved first, so the failing check is the only reason the merge is blocked. Save one screenshot of the merge box that shows the failed `PA02 test` check marked *Required* and the blocked merge button as `PA02/docs/ci/evidence/blocked-pr.png`, and copy the failing run's URL.
+5. **Restore and capture green.** On the same branch, revert the code change with a new commit (`git revert <break-commit>`, no amend or force-push). Push it and wait for the four checks to pass. Copy the green run's URL and the restore commit's URL; the PR page keeps the red mark on the break commit and the green mark on the revert commit. Then merge the PR (merge commit) so `main` keeps both commits.
 6. **Tag run.** After Hùng Linh tags the submission commit `pa2` and pushes the tag, the workflow runs for the tag. Copy that run's URL into `PA2.md`.
 7. Fill in every link in [`PA2.md`](../../PA2.md).
 
