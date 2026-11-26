@@ -36,10 +36,17 @@ Every change after protection was turned on reached `main` through an approved p
 | [#1](https://github.com/VVVu1511/AdvancedWeb/pull/1) | [`9bb7277`](https://github.com/VVVu1511/AdvancedWeb/commit/9bb7277342b52f66319713d003f681e8bddac744) | Service, contract, tests, cross-platform checks, CI workflow |
 | [#2](https://github.com/VVVu1511/AdvancedWeb/pull/2) | [`b0bd889`](https://github.com/VVVu1511/AdvancedWeb/commit/b0bd8895fbd4fcb7634262a162b7af8d27c7cee5) | Deliberate contract break and its revert |
 | [#3](https://github.com/VVVu1511/AdvancedWeb/pull/3) | [`f974494`](https://github.com/VVVu1511/AdvancedWeb/commit/f974494) | CI evidence |
+| [#4](https://github.com/VVVu1511/AdvancedWeb/pull/4) | [`8fa11dd9`](https://github.com/VVVu1511/AdvancedWeb/commit/8fa11dd9d9b9fc6bd42e1ff31999a300006924bd) | Contract review, additional tests, root documents and template-based self-assessment |
 
 
 ## Final review
 
 Hùng Linh's assigned review was performed with Codex on November 25, 2026. See [the review record](docs/pa2-review.md), [task status](TASKS.md), [AI log](AI-LOG.md), and [self-assessment](SELF_ASSESSMENT_REPORT.md). The endpoint contract is at [docs/contract/save-plan.md](docs/contract/save-plan.md).
 
-The tag must be created only after the final review PR has merged into `main`. The filtered tag-run link above avoids changing the tagged commit merely to insert its own run ID. Until that merge and tag run, this is a prepared submission, not a completed delivery.
+PR #4 was approved and merged. Its final head passed [run 45610250961](https://github.com/VVVu1511/AdvancedWeb/actions/runs/45610250961), and the merge passed [main run 45621028245](https://github.com/VVVu1511/AdvancedWeb/actions/runs/45621028245).
+
+## Release acceptance
+
+Create `pa2` only on final approved `main`, after all document corrections have merged. The filtered tag-run link above resolves the run created by pushing that tag without requiring a later edit to the tagged commit. Check that the run is a successful push run for `pa2`, with all four required jobs and the same commit as the remote tag. Keep the tag fixed.
+
+Build `23127081-23127472-23127543_94.zip` from a fresh checkout of that tag, retaining `.git`. Extract the ZIP and verify its CRC, clean working tree, `HEAD` matching `pa2`, intact git history, root submission documents, and all four checks before upload. The root documents describe this release procedure; the remote tag, its run, and the extracted ZIP provide evidence that it was performed. Submit from one member's student email by November 26, 2026, 22:00 Vietnam time.

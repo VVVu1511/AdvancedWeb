@@ -68,4 +68,17 @@ Gitleaks 8.21.1 reported no findings in the 21 commits reachable from fetched re
 
 The assistants were given assignment material, repository code, documentation and tool output for these tasks. No real API key or real traveler data was intentionally supplied. The application itself makes no model call: no application data leaves for a model, no provider is configured, and model cost per plan is USD 0. Any later integration must document its outgoing data and configure its cap before making paid calls.
 
-The user authorized work on Linh's assignment, including PR, tag and archive preparation. The existing git author identity was retained. The team remains responsible for understanding and explaining the code. PR #4's implementation checks passed, but approval and merge are pending. No `pa2` tag, tag CI run, final ZIP or classroom upload is claimed complete.
+The user authorized work on Linh's assignment, including PR, tag and archive preparation. The existing git author identity was retained. The team remains responsible for understanding and explaining the code. At the November 25 review, PR #4's implementation checks had passed and approval and merge were pending. The November 26 entry below records the subsequent merge and delivery checks. No classroom upload is performed by this log.
+
+
+## 2026-11-26: Final delivery preflight
+
+Tool: Codex.
+
+Asked for: Check carefully whether the approved work is ready to submit and finish the release preparation.
+
+Kept: The approved implementation and 94/100 assessment. GitHub confirms PR #4 merged as `8fa11dd9`, all four required checks remain enforced, the repository is public, and main CI run `45621028245` passed. A fresh remote clone passed all four local commands and all 16 tests. `git fsck --full` passed; redacted Gitleaks scans found no leaks in 23 fetched-history commits or the checkout.
+
+Changed: Corrected stale statements that PR #4 still needed approval. Replaced changing delivery-status claims with a release acceptance procedure tied to the remote tag, tag CI and extracted ZIP, so completing those operations does not require moving the submission tag or editing the archive's tracked files.
+
+Rejected: Tagging while the submission report still said the merged PR needed approval, bypassing branch protection for a documentation correction, and claiming that passing PR CI proves the later tag run passed. The correction goes through another reviewed PR. Tagging and archive verification follow the procedure in [PA2.md](PA2.md); this entry records only checks already performed before its commit.
