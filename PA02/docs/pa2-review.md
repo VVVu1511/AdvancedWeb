@@ -8,7 +8,7 @@ All six documented error types now receive complete HTTP problem-detail assertio
 
 A new assertion against the original `origin/main` implementation failed because an unknown route returned `https://ai-travel-planner.example/problems/not-found`. The contract already required `plan-not-found`; the implementation was corrected. The regression was reproduced in a temporary directory without changing or rewriting git history. All 16 tests pass on the corrected implementation.
 
-The contract now names the full problem URI prefix, response field types, error precedence, in-memory replay lifetime, field-order-sensitive fingerprints, and mock-authentication limits. Its canonical path is `docs/contract/save-plan.md`.
+The contract now names the full problem URI prefix, response field types, error precedence, in-memory replay lifetime, field-order-sensitive fingerprints, and mock-authentication limits. Its current canonical repository path is `PA02/docs/contract/save-plan.md`.
 
 ## Local checks
 
@@ -42,4 +42,6 @@ GitHub branch metadata reports `protected: true`, enforcement for everyone, and 
 
 The failed run `45567788651` is attached to break commit `5016679`; only the test job failed. Restore run `45574532972` succeeded at `4bc62f2`. PR #3 is merged at `f974494`. See [PA2.md](../PA2.md) for the links.
 
-The final PR must receive the required teammate approval. Only after it merges should `pa2` be created, its CI verified, and the repository cloned into the submission ZIP with `.git` retained. Student IDs must come from the team, never from example IDs in the rubric.
+PR #4 received teammate approval and merged as `8fa11dd9`. On November 26, a fresh clone of that merge passed all four commands, all 16 HTTP tests, and `git fsck --full`. Gitleaks found no leaks in 23 fetched-history commits or the checkout. Main CI run `45621028245` passed. Team identities were retrieved from the earlier team report in this repository.
+
+Follow [PA2.md's release acceptance procedure](../PA2.md#release-acceptance) after the final delivery-record correction merges. Verify the remote tag, tag CI and extracted ZIP before uploading; retain `.git` and preserve the tagged files unchanged.

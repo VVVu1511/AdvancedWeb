@@ -9,7 +9,8 @@
 ## Ask first
 
 - Install packages, access a network service, change repository visibility, or alter branch protection.
-- Push, create a pull request, create a release/tag, or modify CI workflows.
+- Push, create a release/tag, or modify CI workflows.
+- Create any new pull request. Explicit user approval is required for each new PR, even when the overall implementation task is authorized.
 - Read, rotate, or change any real secret or billing/spending setting.
 
 ## Never

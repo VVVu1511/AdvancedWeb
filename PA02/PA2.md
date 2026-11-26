@@ -1,3 +1,57 @@
 # PA#2 evidence
 
-See the canonical submission evidence at [PA2.md](../PA2.md) in the repository root.
+The CI gate, branch protection and deliberate contract break are complete. The `pa2` tag row links to the workflow runs filtered by that tag, so it is valid before the tag exists and shows the tag's run once the tag is pushed. [`docs/ci/quality-gate.md`](docs/ci/quality-gate.md) describes the workflow and how this evidence was produced.
+
+| Evidence | Link |
+|---|---|
+| Repository | https://github.com/VVVu1511/AdvancedWeb |
+| CI workflow | [`.github/workflows/pa02-quality-gate.yml`](../.github/workflows/pa02-quality-gate.yml) |
+| Protected-branch settings for `main` | Screenshots [part 1](docs/ci/evidence/branch-protection-1.webp), [part 2](docs/ci/evidence/branch-protection-2.png) and [part 3 (up-to-date branches and the four required checks)](docs/ci/evidence/branch-protection-3.png); settings in [`docs/ci/branch-protection-main.json`](docs/ci/branch-protection-main.json) |
+| Blocked PR: a red check stopped the merge | [PR #2](https://github.com/VVVu1511/AdvancedWeb/pull/2): the required check `PA02 test` failed in [run 45567788651](https://github.com/VVVu1511/AdvancedWeb/actions/runs/45567788651) ([failing job](https://github.com/VVVu1511/AdvancedWeb/actions/runs/45567788651/job/139046727689)) and the merge was blocked although the PR was approved. Screenshot: [`docs/ci/evidence/blocked-pr.png`](docs/ci/evidence/blocked-pr.png) |
+| Deliberate contract break | Commit [`5016679`](https://github.com/VVVu1511/AdvancedWeb/commit/501667904297de727e5faba8fd506cf149086398) (`test(PA02): deliberately break the save-plan ownership contract`) |
+| PR that turned green | The same [PR #2](https://github.com/VVVu1511/AdvancedWeb/pull/2): revert commit [`4bc62f2`](https://github.com/VVVu1511/AdvancedWeb/commit/4bc62f2c7f8fbaaf6785e327d9ddc1b49d10ae23) passed all four required checks in [run 45574532972](https://github.com/VVVu1511/AdvancedWeb/actions/runs/45574532972); merged as [`b0bd889`](https://github.com/VVVu1511/AdvancedWeb/commit/b0bd8895fbd4fcb7634262a162b7af8d27c7cee5) |
+| CI run for the `pa2` tag | [PA02 quality gate runs for `pa2`](https://github.com/VVVu1511/AdvancedWeb/actions/workflows/pa02-quality-gate.yml?query=branch%3Apa2): the workflow runs on every push of the `pa2` tag (`on.push.tags`), and this filtered list shows that run |
+
+## Required checks
+
+`main` requires these four checks from the CI workflow. Each runs the README command verbatim in `PA02/`:
+
+| Check | Command |
+|---|---|
+| `PA02 lint` | `npm run lint` |
+| `PA02 format check` | `npm run format:check` |
+| `PA02 typecheck` | `npm run typecheck` |
+| `PA02 test` | `npm test` |
+
+## Deliberate break
+
+The break changes only `src/app.mjs`: another user's save returns `404 plan-not-found` instead of the contract's `403 plan-not-owned`. Neither the test nor the contract changes. `PA02 test` fails on `rejects another user before exposing or saving a plan`. In [run 45567788651](https://github.com/VVVu1511/AdvancedWeb/actions/runs/45567788651) the test reported `not ok 3 - rejects another user before exposing or saving a plan` with `expected: 403` and `actual: 404`; lint, format check and typecheck passed, so the gate failed for the contract violation only. A follow-up `git revert` commit on the same PR restored the code and the four checks turned green. Both commits are in `main`'s history through the merge commit; nothing was squashed, rebased or force-pushed.
+
+## History of `main` since protection
+
+Every change after protection was turned on reached `main` through an approved pull request whose four required checks passed:
+
+| PR | Merge commit | Content |
+|---|---|---|
+| [#1](https://github.com/VVVu1511/AdvancedWeb/pull/1) | [`9bb7277`](https://github.com/VVVu1511/AdvancedWeb/commit/9bb7277342b52f66319713d003f681e8bddac744) | Service, contract, tests, cross-platform checks, CI workflow |
+| [#2](https://github.com/VVVu1511/AdvancedWeb/pull/2) | [`b0bd889`](https://github.com/VVVu1511/AdvancedWeb/commit/b0bd8895fbd4fcb7634262a162b7af8d27c7cee5) | Deliberate contract break and its revert |
+| [#3](https://github.com/VVVu1511/AdvancedWeb/pull/3) | [`f974494`](https://github.com/VVVu1511/AdvancedWeb/commit/f974494) | CI evidence |
+| [#4](https://github.com/VVVu1511/AdvancedWeb/pull/4) | [`8fa11dd9`](https://github.com/VVVu1511/AdvancedWeb/commit/8fa11dd9d9b9fc6bd42e1ff31999a300006924bd) | Contract review, additional tests, root documents and template-based self-assessment |
+
+
+## Final review
+
+Hùng Linh's assigned review was performed with Codex on November 25, 2026. See [the review record](docs/pa2-review.md), [task status](TASKS.md), [AI log](AI-LOG.md), and [self-assessment](SELF_ASSESSMENT_REPORT.md). The endpoint contract is at [docs/contract/save-plan.md](docs/contract/save-plan.md).
+
+PR #4 was approved and merged. Its final head passed [run 45610250961](https://github.com/VVVu1511/AdvancedWeb/actions/runs/45610250961), and the merge passed [main run 45621028245](https://github.com/VVVu1511/AdvancedWeb/actions/runs/45621028245).
+
+## Release acceptance
+
+Create `pa2` only on final approved `main`, after all document corrections have merged. The filtered tag-run link above resolves the run created by pushing that tag without requiring a later edit to the tagged commit. Check that the run is a successful push run for `pa2`, with all four required jobs and the same commit as the remote tag. Keep the tag fixed.
+
+Build `23127081-23127472-23127543_94.zip` from a fresh checkout of that tag, retaining `.git`. Extract the ZIP and verify its CRC, clean working tree, `HEAD` matching `pa2`, intact git history, submission documents under `PA02/`, and all four checks before upload. The project documents describe this release procedure; the remote tag, its run, and the extracted ZIP provide evidence that it was performed. Submit from one member's student email by November 26, 2026, 22:00 Vietnam time.
+
+
+## Document location
+
+Project documents are consolidated in `PA02/` at the user's request. The teacher's requirement for `PA2.md` at the repository root remains a hand-in discrepancy. Do not treat this layout as submission-ready until that discrepancy is resolved. New pull requests require explicit user approval.
