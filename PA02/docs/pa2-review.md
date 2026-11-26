@@ -8,7 +8,7 @@ All six documented error types now receive complete HTTP problem-detail assertio
 
 A new assertion against the original `origin/main` implementation failed because an unknown route returned `https://ai-travel-planner.example/problems/not-found`. The contract already required `plan-not-found`; the implementation was corrected. The regression was reproduced in a temporary directory without changing or rewriting git history. All 16 tests pass on the corrected implementation.
 
-The contract now names the full problem URI prefix, response field types, error precedence, in-memory replay lifetime, field-order-sensitive fingerprints, and mock-authentication limits. Its canonical path is `docs/contract/save-plan.md`.
+The contract now names the full problem URI prefix, response field types, error precedence, in-memory replay lifetime, field-order-sensitive fingerprints, and mock-authentication limits. Its current canonical repository path is `PA02/docs/contract/save-plan.md`.
 
 ## Local checks
 

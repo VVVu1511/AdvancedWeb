@@ -23,6 +23,10 @@
 
 ## Conventions
 
+- Keep PA#2 documents in `PA02/`, without duplicate copies or navigation stubs at the repository root.
+- Read [permissions](PERMISSIONS.md) and the [contract](docs/contract/save-plan.md) before editing.
+- Changes to protected `main` go through reviewed PRs. Obtain explicit user approval before creating any new PR, even when broader implementation work is authorized.
+
 - Return JSON, including RFC 9457 problem details for every API error.
 - Authenticate the request before exposing plan data, and enforce that the plan owner is the caller.
 - Keep validation deterministic and side-effect-free; test a contract through HTTP, not only helpers.
@@ -43,3 +47,4 @@
 - Never edit a test, eval data, or validator rule merely to make a check pass.
 - Never save or share a plan after its backend validation fails. This follows the project brief's final-validator rule.
 - Never treat a reused idempotency key with a different request as a replay. This rule exists because retry safety otherwise hides a client bug.
+- Never move an existing submission tag to conceal later changes.

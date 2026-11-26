@@ -2,6 +2,8 @@
 
 PA#2 establishes the quality gate and implements the contract for saving a validated travel plan. The service is dependency-free and requires Node.js 22 or newer.
 
+The project documents are [submission evidence](PA2.md), [self-assessment](SELF_ASSESSMENT_REPORT.md), [AI log](AI-LOG.md), and [task allocation](TASKS.md). All PA#2 documentation, source and tests are maintained in this directory. Repository-wide Git configuration, license and the GitHub Actions workflow remain outside it.
+
 ## Setup and checks
 
 Run these commands from `PA02/`. No package installation is needed.
